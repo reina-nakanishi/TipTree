@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>login</title>
+</head>
+<body>
+    <form method="POST">
+        {% csrf_token %}
+        <h1>Tip Tree</h1>
+        <h2>アカウントログイン</h2>
+        {{ form }}
+        <input type="submit" value="ログイン">
+    </form>    
+</body>
+</html>
