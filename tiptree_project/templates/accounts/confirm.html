@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>confirm</title>
+</head>
+<body>
+    <form method="POST" action="{% url 'accounts:confirm'%}">
+        {% csrf_token %}
+        <h1>新規アカウント登録 確認</h1>
+        <h2>登録内容をご確認ください</h2>
+        <table>
+            <tr><td>アカウント名</td><td>{{regist_form.username.value}}</td></tr>
+            <tr><td>メールアドレス</td><td>{{regist_form.email.value}}</td></tr>
+            <tr><td>パスワード</td><td><pre>{{ password_mask }}</pre></td></tr>
+        </table>
+        {% for field in regist_form %}
+            {{field.as_hidden}}
+        {% endfor %}
+        <button type="submit" name="action" value="back">戻る</button>
+        <button type="submit" name="action" value="done">登録</button>
+    </form>    
+</body>
+</html>
