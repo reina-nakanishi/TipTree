@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>regist</title>
+</head>
+<body>
+    <form method="POST">
+        {% csrf_token %}
+        <h1>新規アカウント登録</h1>
+        <div>
+            {{ regist_form.username.label_tag }}
+            {{ regist_form.username }}
+        </div>
+        <div>
+            {{ regist_form.email.label_tag }}
+            {{ regist_form.email }}
+        </div>
+        <div>
+            {{ regist_form.password1.label_tag }}
+            {{ regist_form.password1 }}
+            <small>半角英数字を組み合わせて8字以上50字以内で入力してください</small>
+        </div>
+        <div>
+            {{ regist_form.password2.label_tag }}
+            {{ regist_form.password2 }}
+        </div>
+    <input type="submit" value="確認"><br>
+    <a href ="{% url 'accounts:login' %}">ログイン画面に戻る</a>
+    </form>    
+</body>
+</html>
