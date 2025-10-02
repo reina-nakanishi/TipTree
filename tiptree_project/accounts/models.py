@@ -31,7 +31,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=50,unique=True)
     profile_image = models.FileField(null=True)
     bio = models.TextField(null=True)
-    is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     uppdated_at = models.DateTimeField(auto_now=True)
