@@ -54,5 +54,16 @@ def login_view(request):
         }
     )
 
+
+@login_required
+def logout_view(request):
+    logout(request)
+    return redirect('home:home')
+
+
+def my_page(request):
+    return render(request,"accounts/my_page.html")
+
+
 def help(request):
     pass
