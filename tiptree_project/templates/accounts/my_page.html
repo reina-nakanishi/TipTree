@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<img src="{{ user.profile_image.url }}"></br>
+<table>
+    <tr><td>アカウント名:</td><td>{{user.username}}</td></tr>
+    <tr><td>自己紹介:</td><td>{{user.bio}}</td></tr>
+</table>
+<a href="{% url 'accounts:user_edit' %}">
+    <button type="button">編集</button>
+</a>
+<form action="{% url 'accounts:logout' %}" method="post">
+    {% csrf_token %}
+    <input type="submit" value="ログアウト">
+</form>
+<a href ="{% url 'accounts:change_password' %}">パスワード変更</a>
+{% endblock %}
