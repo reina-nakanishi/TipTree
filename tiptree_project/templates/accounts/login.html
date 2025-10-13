@@ -9,6 +9,11 @@
         {% csrf_token %}
         <h1>Tip Tree</h1>
         <h2>アカウントログイン</h2>
+        {% if messages %}
+            {% for message in messages %}
+                <p>{{ message }}<p>
+            {% endfor %}
+        {% endif %}
         {{ login_form }}
         <input type="submit" value="ログイン"><br>
         <a href ="{% url 'accounts:regist' %}">アカウント登録</a><br>
