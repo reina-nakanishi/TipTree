@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<form method="POST" enctype="multipart/form_data">
+{% csrf_token %}
+<div>
+    <img src="{{ user.profile_image.url }}">
+    
+</div>
+<div>
+    {{ user_edit_form.username.label_tag }}
+    {{ user_edit_form.username }}
+</div>
+<div>
+    {{ user_edit_form.bio.label_tag }}
+    {{ user_edit_form.bio }}
+</div>
+<div>
+    {{ user_edit_form.email.label_tag }}
+    {{ user_edit_form.email }}
+</div>
+<input type="submit" value="保存">
+</form>
+<a href="{% url 'accounts:change_password' %}">パスワード変更</a>
+{% endblock %}
