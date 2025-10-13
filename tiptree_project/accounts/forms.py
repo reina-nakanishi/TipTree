@@ -5,10 +5,10 @@ from .models import User
 from django.contrib.auth import get_user_model
 
 
-User = get_user_model
+User = get_user_model()
 
-class RegistForm(forms.Modelform):
-    password1 = forms.CharField(lavel='パスワード', max_length=50, min_length=8, 
+class RegistForm(forms.ModelForm):
+    password1 = forms.CharField(label='パスワード', max_length=50, min_length=8, 
                                widget=forms.PasswordInput,error_messages={
                                    'invalid':'パスワードは半角英数字8字以上50字以下で入力してください',
                                },
@@ -17,12 +17,13 @@ class RegistForm(forms.Modelform):
                                        regex=r'^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]+$',
                                        message='パスワードは半角英数字両方含めてください'
                                    )])
-    password2 = forms.CharField(lavel='パスワード再入力', max_length=50, min_length=8, 
+    password2 = forms.CharField(label='パスワード再入力', max_length=50, min_length=8, 
                                widget=forms.PasswordInput,)
     
     class Meta:
         model = User
         fields = ('username','email')
+        labels = {'username':'アカウント名', 'email':'メールアドレス'}
             
     def clean(self):
         cleaned_data = super().clean()
@@ -57,3 +58,55 @@ class LoginForm(forms.Form):
                                        message='パスワードは半角英数字両方含めてください'
                                    )
                                ])
+
+
+class UserEditForm(forms.ModelForm):
+    
+    class Meta:
+        model = User
+        fields = ('profile_image','username','bio','email')
+        labels = {'profile_image':'プロフィール画像',
+                  'username':'アカウント名',
+                  'bio':'自己紹介',
+                  'email':'メールアドレス'
+                  }
+        required = {
+            'profile_image':False, 'bio':False,
+        }
+        
+        
+class PasswordChangeForm(forms.ModelForm):
+    old_password = forms.CharField(
+        label='元のパスワード', widget = forms.PasswordInput
+    )
+    new_password1 = forms.CharField(label='新しいパスワード', max_length=50, min_length=8, 
+                               widget=forms.PasswordInput,error_messages={
+                                   'invalid':'パスワードは半角英数字8字以上50字以下で入力してください',
+                               },
+                               validators=[
+                                   RegexValidator(
+                                       regex=r'^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]+$',
+                                       message='パスワードは半角英数字両方含めてください'
+                                   )])
+    new_password2 = forms.CharField(label='新しいパスワード(再入力)', max_length=50, min_length=8, 
+                               widget=forms.PasswordInput,)
+    
+    class Meta:
+        model = User
+        fields = ()
+        
+    def clean(self):
+        cleaned_data = super().clean()
+        old_password = cleaned_data.get('old_password')
+        new_password1 = cleaned_data.get('new_password1')
+        new_password2 = cleaned_data.get('new_password2')
+        if not self.instance.check_password(old_password):
+            raise ValidationError('元のパスワードが違います')
+        if new_password1 != new_password2:
+            raise ValidationError('新しいパスワードが一致しません')
+        
+    def save(self, commit=False):
+        user = super().save(commit=False)
+        user.set_password(self.cleaned_data.get('new_password1'))
+        user.save()
+        return user
