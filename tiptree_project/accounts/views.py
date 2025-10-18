@@ -6,6 +6,9 @@ import os
 from django.core.files.storage import FileSystemStorage
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.views import PasswordResetView,PasswordResetConfirmView
+from django.views import View
+from .forms import CustomPasswordResetForm,CustomSetPasswordForm
 
 
 def regist(request):
@@ -104,5 +107,25 @@ def change_password(request):
         'password_change_form':password_change_form
     })
 
-def help(request):
-    pass
+
+class CustomPasswordResetView(PasswordResetView):
+    form_class = CustomPasswordResetForm
+    template_name = "accounts/password_reset_form.html"
+    success_url = "accounts/password_reset_done.html"
+    
+    def form_valid(self, form):
+        self.request.session['reset_email'] = form.cleaned_data['email']
+        return super().form_valid(form)
+    
+class CustomPasswordResetDoneView(View):
+    template_name = "accounts/password_reset_done.html"
+    
+    def get(self, request):
+        email = request.session.get('email','')
+        return render(request,self.template_name,context={
+            'email':email
+        })
+        
+class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+    template_name = "accounts/password_reset_confirm.html"
+    form_class = CustomSetPasswordForm
