@@ -1,11 +1,12 @@
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
-<form method="POST" enctype="multipart/form_data">
+<form method="POST" enctype="multipart/form-data">
 {% csrf_token %}
-<div>
-    <img src="{{ user.profile_image.url }}">
-    
+<div class="image-preview">
+    <img id="preview-image" src="{{ user.profile_image.url }}" alt="現在のプロフィール画像">    
 </div>
+<input type="file" name="profile_image" id="id_image" accept="image/*">
 <div>
     {{ user_edit_form.username.label_tag }}
     {{ user_edit_form.username }}
@@ -21,4 +22,7 @@
 <input type="submit" value="保存">
 </form>
 <a href="{% url 'accounts:change_password' %}">パスワード変更</a>
+{% endblock %}
+{% block extra_js %}
+<script src="{% static 'accounts/js/user_edit.js' %}"></script>
 {% endblock %}
