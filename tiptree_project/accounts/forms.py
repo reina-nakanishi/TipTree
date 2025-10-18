@@ -3,6 +3,9 @@ from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from .models import User
 from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import PasswordResetForm
+from django.contrib.auth.forms import SetPasswordForm
+import re
 
 
 User = get_user_model()
@@ -110,3 +113,44 @@ class PasswordChangeForm(forms.ModelForm):
         user.set_password(self.cleaned_data.get('new_password1'))
         user.save()
         return user
+    
+    
+class CustomPasswordResetForm(PasswordResetForm):
+    email = forms.EmailField(
+        label="メールアドレス",
+        required=True,
+        error_messages={
+            'required':'メールアドレスを入力してください',
+            'invalid':'正しいメールアドレスの形式で入力してください'
+        }
+    )
+    
+    
+class CustomSetPasswordForm(SetPasswordForm):
+    error_messages = {'password_mismatch':'パスワードが一致していません。'}
+    
+    new_password1 = forms.CharField(label='新しいパスワード', max_length=50, min_length=8, 
+                               widget=forms.PasswordInput)
+    new_password2 = forms.CharField(label='新しいパスワード(再入力)', max_length=50, min_length=8, 
+                               widget=forms.PasswordInput,)
+    
+    def clean_new_password1(self):
+        password = self.cleaned_data.get('new_password1')
+        
+        if not password:
+            raise ValidationError('パスワードを入力してください。')
+        
+        if len(password) < 8 or len(password) > 50:
+            raise ValidationError('パスワードは8字以上50字以下で入力してください。')
+        
+        if not re.match(r'^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]+$',password):
+            raise ValidationError('パスワードは半角英数字両方含めてください')
+        
+        return password
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        password1 = cleaned_data.get("new_password1")
+        password2 = cleaned_data.get("new_password2")
+        return cleaned_data
+        
