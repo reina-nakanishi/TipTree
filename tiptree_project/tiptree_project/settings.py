@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'accounts',
     'home',
+    'posts',
 ]
 
 MIDDLEWARE = [
@@ -132,3 +133,20 @@ STATICFILES_DIRS = [
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR,'media')
+
+
+if DEBUG:
+    # 開発中はコンソールにメール内容を表示（実際の送信はしない）
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    # 本番環境ではSMTPサーバーを使ってメール送信
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = os.environ.get('DJANGO_EMAIL_HOST')
+    EMAIL_PORT = int(os.environ.get('DJANGO_EMAIL_PORT', 587))
+    EMAIL_HOST_USER = os.environ.get('DJANGO_EMAIL_USER')
+    EMAIL_HOST_PASSWORD = os.environ.get('DJANGO_EMAIL_PASSWORD')
+    EMAIL_USE_TLS = True
+    DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@example.com')
+    
+PASSWORD_RESET_TIMEOUT = 3600
+
