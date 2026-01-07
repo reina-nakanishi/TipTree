@@ -88,9 +88,9 @@ DATABASES = {
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
+    # {
+    #     'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    # },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
     },
@@ -150,3 +150,51 @@ else:
     
 PASSWORD_RESET_TIMEOUT = 3600
 
+TEMP_DIR = BASE_DIR / "temp"
+TEMP_DIR.mkdir(exist_ok=True)
+
+# logs フォルダのパス
+LOG_DIR = BASE_DIR / "logs"
+LOG_DIR.mkdir(exist_ok=True)  # なければ自動作成
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+
+    "formatters": {           #どんな形式で書くか
+        "standard": {
+            "format": "[{levelname}] {asctime} {name}: {message}",
+            "style": "{",  #ログの書き方ルールの記号を指定
+        },
+    },
+
+    "handlers": {     #渡す先
+        "file": {
+            "level": "WARNING",
+            "class": "logging.FileHandler",   #ファイルに書く専門
+            "formatter": "standard",
+            "filename": LOG_DIR / "app.log",
+            "encoding": "utf-8",    #日本語が文字化けしないようにする設定
+        },  
+        "cleanup_file": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "formatter": "standard",
+            "filename": LOG_DIR / "cleanup.log",
+            "encoding": "utf-8",
+        },
+    },
+
+    "loggers": {
+        "": {         # すべての logger(ログ係) を対象
+            "handlers": ["file"], #ファイルに書く人だけ使う
+            "level": "WARNING", #WARNING以上はログを残す
+            "propagate": True,
+        },
+     "cleanup": {
+            "handlers": ["cleanup_file"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
+}
