@@ -1,4 +1,10 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'posts/css/post_grid.css' %}">
+<link rel="stylesheet" href="{% static 'posts/css/post_card.css' %}">
+{% endblock %}
 {% block content %}
 <img src="{{ user.profile_image.url }}"></br>
 <table>
@@ -13,4 +19,9 @@
     <input type="submit" value="ログアウト">
 </form>
 <a href ="{% url 'accounts:change_password' %}">パスワード変更</a>
+<div class="post-grid">
+  {% for post in posts %}
+    {% include "components/post_card.html" %}
+  {% endfor %}
+</div>
 {% endblock %}
