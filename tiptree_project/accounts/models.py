@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser, PermissionsMixin
 )
+from django.core.validators import FileExtensionValidator
 
 class UserManager(BaseUserManager):
     
@@ -30,10 +31,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=20)
     email = models.EmailField(max_length=50,unique=True)
     profile_image = models.ImageField(
-        upload_to='profile_images/',
-        default='profile_images/default_profile.png',
-        blank=True,null=True                              
-        )
+        upload_to='accounts/profile_images/',
+        default='accounts/profile_images/default_profile.png',
+        blank=True,null=True,
+        validators=[FileExtensionValidator(['jpg','jpeg','png'],message="JPEGまたはPNG画像を選択してください")])
     bio = models.TextField(default='',blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
