@@ -25,6 +25,7 @@ urlpatterns = [
     path('', views.portfolio, name='portfolio'),
     path('accounts/',include('accounts.urls')),
     path('home/',include('home.urls')),
+    path('posts/',include('posts.urls')),
 ]
 
 if settings.DEBUG:
