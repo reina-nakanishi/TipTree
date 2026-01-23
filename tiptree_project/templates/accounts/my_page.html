@@ -11,6 +11,17 @@
     <tr><td>アカウント名:</td><td>{{user.username}}</td></tr>
     <tr><td>自己紹介:</td><td>{{user.bio}}</td></tr>
 </table>
+
+<span>マイアクション</span>
+<div class="my-action">
+  <span>
+    <a href="{% url 'posts:saved_post_list' %}"><i class="fas fa-bookmark"></i>あとで見る</a>
+  </span>
+  <span>
+    <a href="{% url 'posts:helped_post_list' %}"><i class="far fa-thumbs-up"></i>役立った</a>
+  </span>
+</div>
+
 <a href="{% url 'accounts:user_edit' %}">
     <button type="button">編集</button>
 </a>
@@ -20,8 +31,27 @@
 </form>
 <a href ="{% url 'accounts:change_password' %}">パスワード変更</a>
 <div class="post-grid">
-  {% for post in posts %}
+  {% for post in page_obj %}
     {% include "components/post_card.html" %}
   {% endfor %}
+</div>
+<div class="pagination">
+  {% if page_obj.has_previous %}
+    <a href="?page=1">&laquo;</a>
+    <a href="?page={{ page_obj.previous_page_number }}">&lt;</a>
+  {% endif %}
+
+  {% for num in page_obj.paginator.page_range %}
+    {% if num == page_obj.number %}
+      <span class="current">[{{ num }}]</span>
+    {% elif num >= page_obj.number|add:'-3' and num <= page_obj.number|add:'3' %}
+      <a href="?page={{ num }}">{{ num }}</a>
+    {% endif %}
+  {% endfor %}
+
+  {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}">&gt;</a>
+    <a href="?page={{ page_obj.paginator.num_pages }}">&raquo;</a>
+  {% endif %}
 </div>
 {% endblock %}
