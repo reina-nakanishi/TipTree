@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'posts/css/confirm.css' %}">
+{% endblock %}
+
+{% block content %}
+    <form method="POST" action="{% url 'posts:confirm'%}">
+        {% csrf_token %}
+        <h2>この内容で投稿する場合は 投稿ボタン を押してください。</h2>
+        <table>
+            <tr><td>タイトル</td><td>{{create_post_form.title.value}}</td></tr>
+            <tr><td>カテゴリー</td><td>{{create_post_form.category}}</td></tr>
+<tr>
+    <td>サムネイル画像</td>
+    <td>
+        {% if post.thumbnail %}
+            <img src="{{ post.thumbnail.url }}" alt="{{ post.title }}のサムネイル">
+        {% endif %}
+    </td>
+</tr>
+
+<tr>
+    <td>動画</td>
+    <td>
+        {% if post.video %}
+            <video src="{{ post.video.url }}" controls></video>
+        {% endif %}
+    </td>
+</tr>
+            <tr><td>本文</td><td>{{create_post_form.content.value}}</td></tr>
+            <tr><td>補足説明</td><td>{{create_post_form.description.value}}</td></tr>
+        </table>
+        {% for field in create_post_form %}
+            {{field.as_hidden}}
+        {% endfor %}
+        <button type="submit" name="action" value="back">戻る</button>
+        <button type="submit" name="action" value="done">登録</button>
+    </form>    
+{% endblock %}

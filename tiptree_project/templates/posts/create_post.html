@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<body>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% for field in create_post_form %}
+            <div>
+                {{field.label}}
+                {% if field.field.required %}
+                    <span style="color: red;">*</span>
+                {% endif %}
+                {{ field }}
+                {% if field.errors %}
+                    {{ field.errors }}
+                {% endif %}
+            </div>
+        {% endfor %}
+    <input type="submit" value="確認"><br>
+    </form>    
+</body>
+{% endblock %}

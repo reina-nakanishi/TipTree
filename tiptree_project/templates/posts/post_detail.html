@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'posts/css/post_detail.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="post-detail">
+
+    <div class="maincontent">
+
+        <div class="video-wrapper">
+            <video controls src="{{ post.video.url }}"></video>
+        </div>
+
+        <div class="post-meta">
+            <h1 class=post-title>{{ post.title }}</h1>
+            <h3 class=post-category>{{ post.category }}</h3>
+        </div>
+
+        <div class="post-header">
+            <div class="post-user">
+                <img src="{{ post.user.profile_image.url }}" class="user-icon" alt="ユーザーアイコン">
+                <span class="username">{{ post.user.username }}</span>
+
+                {% if request.user == post.user %}
+
+                    <a href="{% url 'posts:edit_post' post.id %}">編集</a>
+                    <button type="button"  class="delete-btn" onclick="openDeleteModal()" >
+                        削除
+                    </button>
+                        
+                {% endif %}
+            </div>
+
+            <div class="post-stats">
+                <form action="{% url 'posts:toggle_help' post.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="help-btn">
+                        {% if user in post.helped_users.all %}
+                        <i class="fas fa-thumbs-up"></i>
+                        {% else %}
+                        <i class="far fa-thumbs-up"></i>
+                        {% endif %}
+                    </button>
+                </form>
+
+                <span class="comments">
+                    <i class="far fa-comment-dots"></i>
+                    <span>{{ post.comment_count }}</span>
+                </span>
+                <form action="{% url 'posts:toggle_save' post.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="save-btn">
+                        {% if user in post.saved_users.all %}
+                        <i class="fas fa-bookmark"></i>
+                        {% else %}
+                        <i class="far fa-bookmark"></i>
+                        {% endif %}
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="post-body">
+                <p id="post-text" class="collapsed">
+                    {{ post.content|linebreaksbr }}
+                </p>
+
+                <button id="toggle-btn" class="toggle-btn">
+                    もっと見る
+                </button>
+        </div>
+    </div>
+
+    <div class="side-content">
+
+    </div>
+
+</div>
+<div id="delete-modal" class="modal hidden">
+    <div class="modal-content">
+        <button class="close-btn" onclick="closeDeleteModal()">×</button>
+
+        <p class="modal-text">
+            以下の投稿を削除しますか？
+        </p>
+
+        <p class="modal-title">
+            {{ post.title }}
+        </p>
+
+        <form method="post" action="{% url 'posts:post_delete' post.id %}">
+            {% csrf_token %}
+            <button type="submit" class="confirm-delete">
+                削除
+            </button>
+        </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'posts/js/post_detail.js' %}"></script>
+{% endblock %}
