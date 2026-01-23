@@ -72,6 +72,16 @@ class Post(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     uppdated_at = models.DateTimeField(auto_now=True)
+    saved_users = models.ManyToManyField(
+        User,
+        through="SavePost",
+        related_name="saved_posts"
+    )
+    helped_users = models.ManyToManyField(
+        User,
+        through="HelpPost",
+        related_name="helped_posts"
+    )
     
     @property
     def help_count(self):
@@ -86,7 +96,7 @@ class Post(models.Model):
         
         
 class HelpPost(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='helped_posts')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='help_posts')
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='helped_by')
     created_at = models.DateTimeField(auto_now_add=True)
         
@@ -96,7 +106,7 @@ class HelpPost(models.Model):
         
         
 class SavePost(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='saved_posts')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='save_posts')
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='saved_by')
     created_at = models.DateTimeField(auto_now_add=True)
 
