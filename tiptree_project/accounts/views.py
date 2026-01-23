@@ -11,7 +11,7 @@ from django.contrib.auth.views import PasswordResetView,PasswordResetConfirmView
 from django.views import View
 from .forms import CustomPasswordResetForm,CustomSetPasswordForm
 from django.urls import reverse_lazy
-
+from django.core.paginator import Paginator
 
 def regist(request):
     regist_form = forms.RegistForm(request.POST or None)
@@ -77,11 +77,16 @@ def logout_view(request):
 
 @login_required
 def my_page(request):
-    user = request.user
-    posts = Post.objects.filter(user = user).order_by('-created_at')
-    return render(request,"accounts/my_page.html",context={
-        'user': user,
-        'posts': posts
+    post_list = Post.objects.filter(
+        user=request.user
+    ).order_by('-created_at')
+
+    paginator = Paginator(post_list, 12)  # 1ページ12件
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'accounts/my_page.html', context = {
+        'page_obj': page_obj,
     })
     
 
