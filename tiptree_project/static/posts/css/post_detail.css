@@ -1,0 +1,135 @@
+.post-detail {
+  display: grid;
+  grid-template-columns: 7fr 3fr; 
+  gap: 24px;
+}
+
+.video-wrapper {
+  width: 100%;
+  aspect-ratio: 16 / 9; 
+  background: #000;
+  overflow: hidden;
+}
+
+.video-wrapper video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.post-header{
+  display: flex;
+  align-items: center;
+  padding: 8px;
+}
+
+.post-user{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 15px;
+}
+
+.post-stats {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: auto;
+  font-size: 28px;
+  color: #555;
+}
+
+.post-stats .help-btn,
+.post-stats .save-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+
+  appearance: none;
+  -webkit-appearance: none;
+
+  outline: none;
+}
+
+.post-body {
+  margin: 16px;
+  background: #f5f5f5;
+  border-radius: 8px;
+  padding: 12px 16px;
+
+}
+
+#post-text {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #333;
+}
+
+/* 折りたたみ時 */
+#post-text.collapsed {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;   /* ← 表示したい行数 */
+  -webkit-box-orient: vertical;
+
+  line-clamp: 3;
+  box-orient: vertical;
+
+  overflow: hidden;
+}
+
+.toggle-btn {
+  background: none;
+  border: none;
+  color: #065fd4; /* YouTubeっぽい青 */
+  cursor: pointer;
+  padding: 4px 0;
+  font-size: 14px;
+}
+
+.modal {
+  position: fixed;  /*画面固定　スクロールしても動かない*/
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  width: 320px;
+  text-align: center;
+  position: relative;
+}
+
+.close-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  border: none;
+  background: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.confirm-delete {
+  background: #e53935;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}

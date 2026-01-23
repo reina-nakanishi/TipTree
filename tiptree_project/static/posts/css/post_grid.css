@@ -1,0 +1,10 @@
+.post-grid {
+  display: grid;
+
+  /* カードを自動で並べる */
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+
+  gap: 24px;
+
+  padding: 24px;
+}

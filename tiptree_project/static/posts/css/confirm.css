@@ -1,0 +1,15 @@
+img, video {
+    max-width: 40%;
+    height: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table td:first-child {
+    width: 150px;   /* ラベル部分の幅を固定 */
+    vertical-align: top;
+    padding: 8px;
+}
