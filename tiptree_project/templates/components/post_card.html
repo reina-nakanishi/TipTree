@@ -1,0 +1,39 @@
+<div class="postcard">
+    <div class="post-user">
+        <img src="{{ post.user.profile_image.url }}" class="user-icon" alt="ユーザーアイコン">
+        <span class="username">{{ post.user.username }}</span>
+    </div>
+
+    <a href="{% url 'posts:post_detail' post.id %}" class="thumbnail-link">
+        <img class="thumbnail" src="{{ post.thumbnail.url }}" alt="サムネイル">
+    </a>
+
+    <div class="post-info">
+        <a href="{% url 'posts:post_detail' post.id %}" class="post-title-link">
+            <h3>{{ post.title }}</h3>
+        </a>
+        <p class="post-category">{{ post.category }}</p>
+    </div>
+
+    <div class="post-stats">
+        <span class="likes">
+            <i class="far fa-thumbs-up"></i>
+            <span>{{ post.help_count }}</span>
+        </span>
+
+        <span class="comments">
+            <i class="far fa-comment-dots"></i>
+            <span>{{ post.comment_count }}</span>
+        </span>
+        <form action="{% url 'posts:toggle_save' post.id %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="save-btn">
+                {% if user in post.saved_users.all %}
+                <i class="fas fa-bookmark"></i>
+                {% else %}
+                <i class="far fa-bookmark"></i>
+                {% endif %}
+            </button>
+        </form>
+    </div>
+</div>
