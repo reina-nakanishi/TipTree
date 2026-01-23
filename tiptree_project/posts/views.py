@@ -1,8 +1,9 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from . import forms
-from .models import Post
+from .models import Post,SavePost,HelpPost
 from django.contrib.auth.decorators import login_required
 import os, uuid
+from django.core.paginator import Paginator
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.core.files import File
@@ -122,8 +123,8 @@ def confirm(request):
     
 
 @login_required
-def edit_post(request, pk):
-    post = get_object_or_404(Post, pk=pk)
+def edit_post(request, post_id):
+    post = get_object_or_404(Post, post_id)
     edit_post_form = forms.EditPostForm(
         request.POST or None, request.FILES or None, instance=post
     )
@@ -134,3 +135,79 @@ def edit_post(request, pk):
     return render(request,'posts/edit_post.html',context={
         'edit_post_form':edit_post_form
     })
+
+@login_required
+def toggle_save(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    user = request.user
+
+    saved = SavePost.objects.filter(user=user, post=post)
+
+    if saved.exists():
+        saved.delete()
+    else:
+        SavePost.objects.create(user=user, post=post)
+
+    return redirect(request.META.get("HTTP_REFERER", "/"))
+
+
+@login_required
+def saved_post_list(request):
+    posts = Post.objects.filter(
+        saved_users=request.user
+    ).order_by('-saved_by__created_at')  # ← ここ重要！！
+
+    paginator = Paginator(posts, 12)  # 1ページ12件
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'posts/saved_post_list.html', {
+        'page_obj': page_obj,
+    })
+    
+    
+@login_required
+def toggle_help(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    user = request.user
+
+    helped = HelpPost.objects.filter(user=user, post=post)
+
+    if helped.exists():
+        helped.delete()
+    else:
+        HelpPost.objects.create(user=user, post=post)
+
+    return redirect(request.META.get("HTTP_REFERER", "/"))
+
+
+@login_required
+def helped_post_list(request):
+    posts = Post.objects.filter(
+        helped_users=request.user
+    ).order_by('-helped_by__created_at')  # ← ここ重要！！
+
+    paginator = Paginator(posts, 12)  # 1ページ12件
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'posts/helped_post_list.html', {
+        'page_obj': page_obj,
+    })
+    
+
+def post_detail(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+
+    return render(request, 'posts/post_detail.html', {
+        'post': post,
+    })
+    
+    
+@login_required
+def post_delete(request, post_id):
+    post = get_object_or_404(Post, id=post_id, user=request.user)
+
+    if request.method == "POST":
+        post.delete()
+        return redirect('posts:my_page') 
