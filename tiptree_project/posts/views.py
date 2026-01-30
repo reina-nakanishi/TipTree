@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from . import forms
-from .models import Post,SavePost,HelpPost
+from .models import Post,SavePost,HelpPost,Supplements
 from django.contrib.auth.decorators import login_required
 import os, uuid
 from django.core.paginator import Paginator
@@ -199,8 +199,20 @@ def helped_post_list(request):
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
 
+    comments = post.comments.select_related('user').order_by('create_at')
+    supplements = post.supplements.select_related('user').order_by('create_at')
+
+    comment_form = forms.CommentForm()
+    supplement_form = forms.SupplementForm()
+    supplement_reply_form = forms.SupplementReplyForm()
+
     return render(request, 'posts/post_detail.html', {
         'post': post,
+        'comments': comments,
+        'supplements': supplements,
+        'comment_form': comment_form,
+        'supplement_form': supplement_form,
+        'supplement_reply_form': supplement_reply_form,
     })
     
     
@@ -211,3 +223,47 @@ def post_delete(request, post_id):
     if request.method == "POST":
         post.delete()
         return redirect('posts:my_page') 
+
+
+@login_required
+def comment_create(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+
+    if request.method == 'POST':
+        comment_form = forms.CommentForm(request.POST)
+        if comment_form.is_valid():
+            comment = comment_form.save(commit=False)
+            comment.post = post
+            comment.user = request.user
+            comment.save()
+
+    return redirect('posts:post_detail', post_id=post.id)
+
+
+@login_required
+def supplement_create(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+
+    if request.method == 'POST':
+        supplement_form = forms.SupplementForm(request.POST)
+        if supplement_form.is_valid():
+            supplement = supplement_form.save(commit=False)
+            supplement.post = post
+            supplement.user = request.user
+            supplement.save()
+
+    return redirect('posts:post_detail', post_id=post.id)
+
+@login_required
+def supplement_reply(request, supplement_id):
+    supplement = get_object_or_404(Supplements, id=supplement_id)
+
+    if request.method == 'POST':
+        supplement_reply_form = forms.SupplementReplyForm(request.POST)
+        if supplement_reply_form.is_valid():
+            supplement_reply = supplement_reply_form.save(commit=False)
+            supplement_reply.supplement = supplement
+            supplement_reply.user = request.user
+            supplement_reply.save()
+
+    return redirect('posts:post_detail', post_id=supplement.post.id)
