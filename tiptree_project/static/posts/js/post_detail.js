@@ -25,3 +25,26 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
+document.addEventListener("input", function (e) {
+  if (e.target.classList.contains("auto-resize")) {
+    e.target.style.height = "auto";
+    e.target.style.height = e.target.scrollHeight + "px";
+  }
+});
+
+document.querySelectorAll(".reply-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const container = btn.closest(".supplement-content");
+    const form = container.querySelector(".supplement-reply-form");
+    const textarea = form.querySelector("textarea");
+
+    form.classList.toggle("is-open");
+
+    if (form.classList.contains("is-open") && textarea) {
+      textarea.style.height = "auto";   // ← これ！
+      textarea.value = "";              // ← 念のため
+      textarea.focus();
+    }
+  });
+});
