@@ -1,5 +1,5 @@
 from django import forms
-from .models import Post
+from .models import Post,Supplements,Comments,SupplementReply,CommentReply
 from tempfile import NamedTemporaryFile
 import subprocess, json, os
 from django.core.exceptions import ValidationError
@@ -147,4 +147,58 @@ class EditPostForm(forms.ModelForm):
             'content':{
                 'required':'本文を入力してください。'
             }
+        }
+
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comments
+        fields = ['content']
+        widgets = {
+            'content': forms.Textarea(
+                attrs={
+                    'placeholder': 'コメントを入力'
+                }
+            )
+        }
+        
+class CommentReplyForm(forms.ModelForm):
+    class Meta:
+        model = CommentReply
+        fields = ['content']
+        widgets = {
+            'content': forms.Textarea(
+                attrs={
+                    'rows': 1,
+                    'class':'auto-resize',
+                }
+            )
+        }
+
+
+class SupplementForm(forms.ModelForm):
+    class Meta:
+        model = Supplements
+        fields = ['content']
+        widgets = {
+            'content': forms.Textarea(
+                attrs={
+                    'rows': 1,
+                    'class':'auto-resize',
+                    'placeholder': 'もっとこうしたら良くなる！'
+                }
+            )
+        }
+        
+class SupplementReplyForm(forms.ModelForm):
+    class Meta:
+        model = SupplementReply
+        fields = ['content']
+        widgets = {
+            'content': forms.Textarea(
+                attrs={
+                    'rows': 1,
+                    'class':'auto-resize',
+                }
+            )
         }
