@@ -2,6 +2,7 @@
   display: grid;
   grid-template-columns: 7fr 3fr; 
   gap: 24px;
+  margin: 0 20px;
 }
 
 .video-wrapper {
@@ -83,6 +84,91 @@
   overflow: hidden;
 }
 
+.auto-resize {
+  width: 100%;
+  min-height: 24px;   /* 1行分 */
+  resize: none;       /* 右下の手動リサイズ消す */
+  overflow: hidden;   /* スクロールバー出さない */
+}
+
+.supplement-form,
+.supplement-reply-form {
+  display: flex;
+  gap: 8px;       
+  width: 100%;     
+}
+
+.supplement-form textarea {
+  flex: 1;          
+}
+
+.supplement-form button {
+  white-space: nowrap; 
+}
+
+.supplement-item {
+  display: flex;
+  align-items: center; /* ← アイコンを縦中央に */
+  gap: 12px;
+  margin: 12px 0;
+}
+.supplement-user-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0; /* 縮まない */
+}
+.supplement-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+.supplement-meta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.supplement-username,
+.reply-username {
+  font-weight: bold;
+}
+.supplement-text,
+.supplement-reply-text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.reply-btn {
+  align-self: flex-start;
+  padding: 4px 8px;
+}
+
+.supplement-reply-form textarea {
+  width: 100%;
+  min-height: 60px;
+  resize: vertical;
+}
+
+.supplement-reply-form {
+  display: none;
+}
+
+.supplement-reply-form.is-open {
+  display: block;
+}
+
+.reply-user-icon  {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
 .toggle-btn {
   background: none;
   border: none;
@@ -92,7 +178,7 @@
   font-size: 14px;
 }
 
-.modal {
+#delete-modal {
   position: fixed;  /*画面固定　スクロールしても動かない*/
   inset: 0;
   background: rgba(0, 0, 0, 0.5);
@@ -102,7 +188,7 @@
   z-index: 1000;
 }
 
-.modal.hidden {
+#delete-modal.hidden {
   display: none;
 }
 
