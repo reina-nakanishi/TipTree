@@ -47,7 +47,7 @@
                     </button>
                 </form>
 
-                <span class="comments">
+                <span class="comment_count">
                     <i class="far fa-comment-dots"></i>
                     <span>{{ post.comment_count }}</span>
                 </span>
@@ -72,6 +72,75 @@
                 <button id="toggle-btn" class="toggle-btn">
                     もっと見る
                 </button>
+        </div>
+
+        <div class="supplement">
+           <div class="supplement_create">
+                <h3>補足説明</h3>
+
+                <form method="post" action="{% url 'posts:supplement_create' post.id %}" class="supplement-form">
+                    {% csrf_token %}
+                    {{ supplement_form.content }}
+                    <button type="submit">補足を送信</button>
+                </form>
+           </div> 
+        </div>
+        <div class="supplement-list">
+            {% for supplement in supplements %}
+            <div class="supplement-item">
+                <img src="{{ post.user.profile_image.url }}"
+                    class="supplement-user-icon"
+                    alt="ユーザーアイコン">
+
+                <div class="supplement-content">
+                    <div class="supplement-meta">
+                        <span class="supplement-username">{{ post.user.username }}</span>
+                        <small>{{ supplement.create_at }}</small>
+                    </div>
+
+                    <p class="supplement-text">
+                        {{ supplement.content }}
+                    </p>
+
+                    <button class="reply-btn" data-id="{{ supplement.id }}">
+                        返信
+                    </button>
+
+                    <form method="post" class="supplement-reply-form">
+                        {% csrf_token %}
+                        {{ supplement_reply_form.content }}
+                        <button type="submit">送信</button>
+                    </form>
+
+                    <div class="supplement-replies">
+                        {% for supplement_reply in supplement.supplement_replies.all %}
+                        <div class="supplement-reply-item">
+                            <img src="{{ supplement_reply.user.profile_image.url }}"
+                                class="reply-user-icon"
+                                alt="ユーザーアイコン">
+
+                            <div class="reply-body">
+                                <div class="reply-meta">
+                                    <span class="reply-username">
+                                        {{ supplement_reply.user.username }}
+                                    </span>
+                                    <small class="reply-date">
+                                        {{ supplement_reply.create_at }}
+                                    </small>
+                                </div>
+                            </div>
+                            
+                            <p class="supplement-reply-text">
+                            {{ supplement_reply.content }}
+                            </p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+                <p>まだ補足説明はありません</p>
+            {% endfor %}
         </div>
     </div>
 
@@ -98,6 +167,7 @@
                 削除
             </button>
         </form>
+    </div>
 </div>
 {% endblock %}
 
