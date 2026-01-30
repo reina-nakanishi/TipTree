@@ -115,7 +115,7 @@ class SavePost(models.Model):
         unique_together = ('user','post')
         
         
-class Comment(models.Model):
+class Comments(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_comments')
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
     content = models.TextField()
@@ -123,3 +123,25 @@ class Comment(models.Model):
     
     class Meta:
         db_table = 'comments'
+        
+class CommentReply(models.Model):
+    comment = models.ForeignKey(Comments, on_delete=models.CASCADE, related_name="comment_replies")
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField()
+    create_at = models.DateTimeField(auto_now_add=True)
+
+        
+class Supplements(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_supplements')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='supplements')
+    content = models.TextField()
+    create_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        db_table = 'supplements'
+        
+class SupplementReply(models.Model):
+    supplement = models.ForeignKey(Supplements, on_delete=models.CASCADE, related_name="supplement_replies")
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField()
+    create_at = models.DateTimeField(auto_now_add=True)
