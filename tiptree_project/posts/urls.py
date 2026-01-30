@@ -12,5 +12,8 @@ urlpatterns = [
     path("<int:post_id>/help/", views.toggle_help, name="toggle_help"),
     path('helped', views.helped_post_list, name = 'helped_post_list'),
     path("<int:post_id>/", views.post_detail, name="post_detail"),
+    path("<int:post_id>/comment", views.comment_create, name="comment_create"),
+    path("<int:post_id>/supplement", views.supplement_create, name="supplement_create"),
     path("<int:post_id>/delete/", views.post_delete, name="post_delete"),
+    path("supplement/<int:supplement_id>/reply/",views.supplement_reply,name="supplement_reply"),
 ]
