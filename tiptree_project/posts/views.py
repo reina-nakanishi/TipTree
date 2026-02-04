@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from . import forms
-from .models import Post,SavePost,HelpPost,Supplements
+from .models import Post,SavePost,HelpPost,Supplements,Comments,CommentReply,SupplementReply
 from django.contrib.auth.decorators import login_required
 import os, uuid
 from django.core.paginator import Paginator
@@ -241,6 +241,39 @@ def comment_create(request, post_id):
 
 
 @login_required
+def comment_delete(request, comment_id):
+    comment = get_object_or_404(Comments, id=comment_id, user=request.user)
+
+    if request.method == "POST":
+        comment.delete()
+        return redirect(request.META.get("HTTP_REFERER", "/"))
+
+
+@login_required
+def comment_reply(request, comment_id):
+    comment = get_object_or_404(Comments, id=comment_id)
+
+    if request.method == 'POST':
+        comment_reply_form = forms.CommentReplyForm(request.POST)
+        if comment_reply_form.is_valid():
+            comment_reply = comment_reply_form.save(commit=False)
+            comment_reply.comment = comment
+            comment_reply.user = request.user
+            comment_reply.save()
+
+    return redirect('posts:post_detail', post_id=comment.post.id)
+
+
+@login_required
+def comment_reply_delete(request, comment_reply_id):
+    comment_reply = get_object_or_404(CommentReply, id=comment_reply_id, user=request.user)
+
+    if request.method == "POST":
+        comment_reply.delete()
+        return redirect(request.META.get("HTTP_REFERER", "/"))
+
+
+@login_required
 def supplement_create(request, post_id):
     post = get_object_or_404(Post, id=post_id)
 
@@ -253,6 +286,16 @@ def supplement_create(request, post_id):
             supplement.save()
 
     return redirect('posts:post_detail', post_id=post.id)
+
+
+@login_required
+def supplement_delete(request, supplement_id):
+    supplement = get_object_or_404(Supplements, id=supplement_id, user=request.user)
+
+    if request.method == "POST":
+        supplement.delete()
+        return redirect(request.META.get("HTTP_REFERER", "/"))
+
 
 @login_required
 def supplement_reply(request, supplement_id):
@@ -267,3 +310,12 @@ def supplement_reply(request, supplement_id):
             supplement_reply.save()
 
     return redirect('posts:post_detail', post_id=supplement.post.id)
+
+
+@login_required
+def supplement_reply_delete(request, supplement_reply_id):
+    supplement_reply = get_object_or_404(SupplementReply, id=supplement_reply_id, user=request.user)
+
+    if request.method == "POST":
+        supplement_reply.delete()
+        return redirect(request.META.get("HTTP_REFERER", "/"))
