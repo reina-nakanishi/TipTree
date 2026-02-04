@@ -28,7 +28,12 @@
                 {% if request.user == post.user %}
 
                     <a href="{% url 'posts:edit_post' post.id %}">編集</a>
-                    <button type="button"  class="delete-btn" onclick="openDeleteModal()" >
+                    <button  
+                        class="open-delete-modal" 
+                        data-url="{% url 'posts:post_delete' post.id %}"
+                        data-text="この投稿を削除しますか？"
+                        data-content="{{ post.title | truncatechars:30}}"
+                    >
                         削除
                     </button>
                         
@@ -102,9 +107,22 @@
                         {{ supplement.content }}
                     </p>
 
-                    <button class="reply-btn" data-id="{{ supplement.id }}">
-                        返信
-                    </button>
+                    <div class="supplement-actions">
+                        <button class="reply-btn" data-id="{{ supplement.id }}">
+                            返信
+                        </button>
+
+                        {% if request.user == supplement.user %}
+                        <button  
+                            class="open-delete-modal" 
+                            data-url="{% url 'posts:supplement_delete' supplement.id %}"
+                            data-text="この補足説明を削除しますか？"
+                            data-content="{{ supplement.content | truncatechars:30 }}"
+                        >
+                            削除
+                        </button>
+                        {% endif %}
+                    </div>
 
                     <form method="post" class="supplement-reply-form">
                         {% csrf_token %}
@@ -133,6 +151,17 @@
                             <p class="supplement-reply-text">
                             {{ supplement_reply.content }}
                             </p>
+
+                            {% if request.user == supplement_reply.user %}
+                            <button 
+                                class="open-delete-modal" 
+                                data-url="{% url 'posts:supplement_reply_delete' supplement_reply.id %}"
+                                data-text="この返信を削除しますか？"
+                                data-content="{{ supplement_reply.content | truncatechars:30 }}"
+                            >
+                                削除
+                            </button>
+                            {% endif %}
                         </div>
                         {% endfor %}
                     </div>
@@ -140,6 +169,98 @@
             </div>
             {% empty %}
                 <p>まだ補足説明はありません</p>
+            {% endfor %}
+        </div>
+        <div class="comment">
+           <div class="comment_create">
+                <h3>コメント</h3>
+
+                <form method="post" action="{% url 'posts:comment_create' post.id %}" class="comment-form">
+                    {% csrf_token %}
+                    {{ comment_form.content }}
+                    <button type="submit">送信</button>
+                </form>
+           </div> 
+        </div>
+        <div class="comment-list">
+            {% for comment in comments %}
+            <div class="comment-item">
+                <img src="{{ post.user.profile_image.url }}"
+                    class="comment-user-icon"
+                    alt="ユーザーアイコン">
+
+                <div class="comment-content">
+                    <div class="comment-meta">
+                        <span class="comment-username">{{ post.user.username }}</span>
+                        <small>{{ comment.create_at }}</small>
+                    </div>
+
+                    <p class="comment-text">
+                        {{ comment.content }}
+                    </p>
+
+                    <div class="comment-actions">
+                        <button class="reply-btn" data-id="{{ comment.id }}">
+                            返信
+                        </button>
+
+                        {% if request.user == comment.user %}
+                        <button  
+                            class="open-delete-modal" 
+                            data-url="{% url 'posts:comment_delete' comment.id %}"
+                            data-text="この補足説明を削除しますか？"
+                            data-content="{{ comment.content | truncatechars:30 }}"
+                        >
+                            削除
+                        </button>
+                        {% endif %}
+                    </div>
+
+                    <form method="post" class="comment-reply-form">
+                        {% csrf_token %}
+                        {{ comment_reply_form.content }}
+                        <button type="submit">送信</button>
+                    </form>
+
+                    <div class="comment-replies">
+                        {% for comment_reply in comment.comment_replies.all %}
+                        <div class="comment-reply-item">
+                            <img src="{{ comment_reply.user.profile_image.url }}"
+                                class="reply-user-icon"
+                                alt="ユーザーアイコン">
+
+                            <div class="reply-body">
+                                <div class="reply-meta">
+                                    <span class="reply-username">
+                                        {{ comment_reply.user.username }}
+                                    </span>
+                                    <small class="reply-date">
+                                        {{ comment_reply.create_at }}
+                                    </small>
+                                </div>
+                            </div>
+                            
+                            <p class="comment-reply-text">
+                            {{ comment_reply.content }}
+                            </p>
+
+                            {% if request.user == comment_reply.user %}
+                            <button 
+                                class="open-delete-modal" 
+                                data-url="{% url 'posts:comment_reply_delete' comment_reply.id %}"
+                                data-text="この返信を削除しますか？"
+                                data-content="{{ comment_reply.content | truncatechars:30 }}"
+                            >
+                                削除
+                            </button>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+                <p>まだコメントはありません</p>
             {% endfor %}
         </div>
     </div>
@@ -151,17 +272,12 @@
 </div>
 <div id="delete-modal" class="modal hidden">
     <div class="modal-content">
-        <button class="close-btn" onclick="closeDeleteModal()">×</button>
+        <button class="close-btn" type="button">×</button>
 
-        <p class="modal-text">
-            以下の投稿を削除しますか？
-        </p>
+        <p class="modal-text">本当に削除しますか？</p>
+        <p class="modal-subtext"></p>
 
-        <p class="modal-title">
-            {{ post.title }}
-        </p>
-
-        <form method="post" action="{% url 'posts:post_delete' post.id %}">
+        <form method="post" id="delete-form">
             {% csrf_token %}
             <button type="submit" class="confirm-delete">
                 削除
