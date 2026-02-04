@@ -1,221 +1,246 @@
-.post-detail {
-  display: grid;
-  grid-template-columns: 7fr 3fr; 
-  gap: 24px;
-  margin: 0 20px;
-}
+  .post-detail {
+    display: grid;
+    grid-template-columns: 7fr 3fr; 
+    gap: 24px;
+    margin: 0 20px;
+  }
 
-.video-wrapper {
-  width: 100%;
-  aspect-ratio: 16 / 9; 
-  background: #000;
-  overflow: hidden;
-}
+  .video-wrapper {
+    width: 100%;
+    aspect-ratio: 16 / 9; 
+    background: #000;
+    overflow: hidden;
+  }
 
-.video-wrapper video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+  .video-wrapper video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 
-.post-header{
-  display: flex;
-  align-items: center;
-  padding: 8px;
-}
+  .post-header{
+    display: flex;
+    align-items: center;
+    padding: 8px;
+  }
 
-.post-user{
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
+  .post-user{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
 
-.user-icon {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  margin-right: 15px;
-}
+  .user-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 15px;
+  }
 
-.post-stats {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-left: auto;
-  font-size: 28px;
-  color: #555;
-}
+  .post-stats {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-left: auto;
+    font-size: 28px;
+    color: #555;
+  }
 
-.post-stats .help-btn,
-.post-stats .save-btn {
-  background: transparent;
-  border: none;
-  padding: 0;
+  .post-stats .help-btn,
+  .post-stats .save-btn {
+    background: transparent;
+    border: none;
+    padding: 0;
 
-  appearance: none;
-  -webkit-appearance: none;
+    appearance: none;
+    -webkit-appearance: none;
 
-  outline: none;
-}
+    outline: none;
+  }
 
-.post-body {
-  margin: 16px;
-  background: #f5f5f5;
-  border-radius: 8px;
-  padding: 12px 16px;
+  .post-body {
+    margin: 16px;
+    background: #f5f5f5;
+    border-radius: 8px;
+    padding: 12px 16px;
 
-}
+  }
 
-#post-text {
-  font-size: 14px;
-  line-height: 1.6;
-  color: #333;
-}
+  #post-text {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #333;
+  }
 
-/* 折りたたみ時 */
-#post-text.collapsed {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;   /* ← 表示したい行数 */
-  -webkit-box-orient: vertical;
+  /* 折りたたみ時 */
+  #post-text.collapsed {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;   /* ← 表示したい行数 */
+    -webkit-box-orient: vertical;
 
-  line-clamp: 3;
-  box-orient: vertical;
+    line-clamp: 3;
+    box-orient: vertical;
 
-  overflow: hidden;
-}
+    overflow: hidden;
+  }
 
-.auto-resize {
-  width: 100%;
-  min-height: 24px;   /* 1行分 */
-  resize: none;       /* 右下の手動リサイズ消す */
-  overflow: hidden;   /* スクロールバー出さない */
-}
+  .auto-resize {
+    width: 100%;
+    min-height: 24px;   /* 1行分 */
+    resize: none;       /* 右下の手動リサイズ消す */
+    overflow: hidden;   /* スクロールバー出さない */
+  }
 
-.supplement-form,
-.supplement-reply-form {
-  display: flex;
-  gap: 8px;       
-  width: 100%;     
-}
+  .supplement-form,
+  .comment-form {
+    display: flex;
+    align-items: center;
+    gap: 8px;       
+    width: 100%;     
+  }
 
-.supplement-form textarea {
-  flex: 1;          
-}
+  .supplement-form textarea,
+  .comment-form textarea{
+    width: calc(100% - 120px);
+    box-sizing: border-box;          
+  }
 
-.supplement-form button {
-  white-space: nowrap; 
-}
+  .supplement-form button,
+  .comment-form button {
+    width: auto;
+    white-space: nowrap; 
+  }
 
-.supplement-item {
-  display: flex;
-  align-items: center; /* ← アイコンを縦中央に */
-  gap: 12px;
-  margin: 12px 0;
-}
-.supplement-user-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0; /* 縮まない */
-}
-.supplement-content {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  flex: 1;
-}
-.supplement-meta {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
+  .supplement-item,
+  .comment-item {
+    display: flex;
+    align-items: flex-start; 
+    gap: 12px;
+    margin: 12px 0;
+  }
+  .supplement-user-icon,
+  .comment-user-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0; /* 縮まない */
+  }
+  .supplement-content,
+  .comment-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+  }
+  .supplement-meta,
+  .comment-meta {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
 
-.supplement-username,
-.reply-username {
-  font-weight: bold;
-}
-.supplement-text,
-.supplement-reply-text {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.5;
-}
+  .supplement-username,
+  .comment-username,
+  .reply-username {
+    font-weight: bold;
+  }
+  .supplement-text,
+  .supplement-reply-text,
+  .comment-text,
+  .comment-reply-text {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+  }
 
-.reply-btn {
-  align-self: flex-start;
-  padding: 4px 8px;
-}
+  .supplement-actions,
+  .comment-actions {
+    display: flex;
+    gap: 8px;         
+    margin-top: 4px;
+  }
 
-.supplement-reply-form textarea {
-  width: 100%;
-  min-height: 60px;
-  resize: vertical;
-}
+  .reply-btn,
+  .open-delete-modal {
+    align-self: flex-start;
+    padding: 4px 8px;
+  }
 
-.supplement-reply-form {
-  display: none;
-}
+  .supplement-reply-form textarea,
+  .comment-reply-form textarea {
+    width: calc(100% - 120px);
+    box-sizing: border-box; 
+  }
 
-.supplement-reply-form.is-open {
-  display: block;
-}
+  .supplement-reply-form,
+  .comment-reply-form {
+    display: none;
+    align-items: center;
+    gap: 8px;       
+    width: 100%;  
+  }
 
-.reply-user-icon  {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-}
+  .supplement-reply-form.is-open,
+  .comment-reply-form.is-open {
+  display: flex; 
+  }
 
-.toggle-btn {
-  background: none;
-  border: none;
-  color: #065fd4; /* YouTubeっぽい青 */
-  cursor: pointer;
-  padding: 4px 0;
-  font-size: 14px;
-}
+  .reply-user-icon  {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
 
-#delete-modal {
-  position: fixed;  /*画面固定　スクロールしても動かない*/
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
+  .toggle-btn {
+    background: none;
+    border: none;
+    color: #065fd4; /* YouTubeっぽい青 */
+    cursor: pointer;
+    padding: 4px 0;
+    font-size: 14px;
+  }
 
-#delete-modal.hidden {
-  display: none;
-}
+  #delete-modal {
+    position: fixed;  /*画面固定　スクロールしても動かない*/
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
 
-.modal-content {
-  background: #fff;
-  padding: 24px;
-  border-radius: 12px;
-  width: 320px;
-  text-align: center;
-  position: relative;
-}
+  #delete-modal.hidden {
+    display: none;
+  }
 
-.close-btn {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  border: none;
-  background: none;
-  font-size: 20px;
-  cursor: pointer;
-}
+  .modal-content {
+    background: #fff;
+    padding: 24px;
+    border-radius: 12px;
+    width: 320px;
+    text-align: center;
+    position: relative;
+  }
 
-.confirm-delete {
-  background: #e53935;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-}
+  .close-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    border: none;
+    background: none;
+    font-size: 20px;
+    cursor: pointer;
+  }
+
+  .confirm-delete {
+    background: #e53935;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
