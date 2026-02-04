@@ -157,6 +157,8 @@ class CommentForm(forms.ModelForm):
         widgets = {
             'content': forms.Textarea(
                 attrs={
+                    'rows': 1,
+                    'class':'auto-resize',
                     'placeholder': 'コメントを入力'
                 }
             )
