@@ -84,15 +84,26 @@ document.querySelectorAll(".reply-btn").forEach(btn => {
   });
 });
 
-document.querySelectorAll(".reply-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
+document.querySelectorAll(".toggle-replies").forEach(button => {
 
-    console.log("返信ボタン押された");
+  button.addEventListener("click", () => {
 
-    const container = btn.closest(".comment-content");
-    console.log("container:", container);
+    const item = button.closest(".comment-item, .supplement-item");
+    const replies = item.querySelector(".comment-replies, .supplement-replies");
+    const count = button.dataset.count;
 
-    const form = container?.querySelector(".comment-reply-form");
-    console.log("form:", form);
+    if (replies.style.display === "block") {
+
+      replies.style.display = "none";
+      button.textContent = `${count}件の返信を表示 ▼`;
+
+    } else {
+
+      replies.style.display = "block";
+      button.textContent = `返信を非表示 ▲`;
+
+    }
+
   });
+
 });
