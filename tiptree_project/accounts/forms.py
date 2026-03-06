@@ -76,7 +76,19 @@ class UserEditForm(forms.ModelForm):
         required = {
             'profile_image':False, 'bio':False,
         }
-        
+        widgets = {
+            "bio": forms.Textarea(attrs={"rows": 4}),
+        }
+        error_messages ={
+            'username':{
+                'required':'アカウント名を入力してください。',
+                'max_length':'アカウント名は20字以内で書いてください。'
+            },
+            'email':{
+                'required':'メールを入力してください。',
+                'invalid' : '有効なメールアドレスを入力してください'
+            }
+        }
         
 class PasswordChangeForm(forms.ModelForm):
     old_password = forms.CharField(
