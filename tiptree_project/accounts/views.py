@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from . import forms
+from . import forms,models
 from posts.models import Post
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -12,6 +12,7 @@ from django.views import View
 from .forms import CustomPasswordResetForm,CustomSetPasswordForm
 from django.urls import reverse_lazy
 from django.core.paginator import Paginator
+from django.shortcuts import get_object_or_404
 
 def regist(request):
     regist_form = forms.RegistForm(request.POST or None)
@@ -41,10 +42,14 @@ def confirm(request):
             login(request, user)
             return redirect('home:home')
      
-        if regist_form.is_valid():
-            password_mask = "●"* len(regist_form.cleaned_data['password1'])
-            
-        return render(request,"accounts/confirm.html",context={
+        if not regist_form.is_valid():
+            return render(request,"accounts/regist.html",{
+                'regist_form':regist_form
+            })
+
+        password_mask = "●" * len(regist_form.cleaned_data['password1'])
+
+        return render(request,"accounts/confirm.html",{
             'regist_form':regist_form,
             'password_mask':password_mask
         })
@@ -60,6 +65,11 @@ def login_view(request):
         user = authenticate(email=email, password=password)
         if user:
             login(request, user)
+
+            next_url = request.POST.get('next') or request.GET.get('next')
+            if next_url:
+                return redirect(next_url)
+
             return redirect('home:home')
         else:
             messages.warning(request,'メールアドレスまたはパスワードが正しくありません')
@@ -87,7 +97,28 @@ def my_page(request):
 
     return render(request, 'accounts/my_page.html', context = {
         'page_obj': page_obj,
+        'page_user': request.user,
     })
+    
+def user_page(request, user_id):
+    user = get_object_or_404(models.User, id=user_id)
+
+    post_list = Post.objects.filter(
+        user=user
+    ).order_by('-created_at')
+
+    paginator = Paginator(post_list, 12)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(
+        request,
+        'accounts/my_page.html',
+        {
+            'page_user': user,
+            'page_obj': page_obj,
+        }
+    )
     
 
 @login_required
