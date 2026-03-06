@@ -5,13 +5,25 @@
   border-radius: 12px;
   overflow: hidden;
   background: #fff;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  transition: all 0.2s ease;
+}
+
+.postcard:hover {
+  box-shadow: 0 8px 18px rgba(0,0,0,0.18);
+  transform: translateY(-4px);
 }
 
 .post-user {
   display: flex;
   align-items: center;
   padding: 8px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.post-user:hover {
+  color: inherit;
 }
 
 .user-icon {
@@ -42,12 +54,12 @@
   padding: 8px;
 }
 
-.post-stats {
+.postcard .post-stats {
   display: flex;
   align-items: center;
   gap: 16px;
   padding: 8px;
-  font-size: 14px;
+  font-size: 20px;
   color: #555;
 }
 
