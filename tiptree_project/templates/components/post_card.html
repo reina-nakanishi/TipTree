@@ -1,18 +1,26 @@
 <div class="postcard">
-    <div class="post-user">
-        <img src="{{ post.user.profile_image.url }}" class="user-icon" alt="ユーザーアイコン">
-        <span class="username">{{ post.user.username }}</span>
-    </div>
+    <a href="{% url 'accounts:user_page' post.user.id %}" class="post-user">
+    <img src="{{ post.user.profile_image.url }}" class="user-icon" alt="ユーザーアイコン">
+    <span class="username">{{ post.user.username }}</span>
+    </a>
 
+    {% if login_redirect %}
+    <a href="{% url 'accounts:login' %}?next={% url 'posts:post_detail' post.id %}" class="thumbnail-link">
+    {% else %}
     <a href="{% url 'posts:post_detail' post.id %}" class="thumbnail-link">
-        <img class="thumbnail" src="{{ post.thumbnail.url }}" alt="サムネイル">
+    {% endif %}
+        <img class="thumbnail" src="{{ post.thumbnail.url }}" alt="{{ post.title }}">
     </a>
 
     <div class="post-info">
+        {% if login_redirect %}
+        <a href="{% url 'accounts:login' %}?next={% url 'posts:post_detail' post.id %}" class="post-title-link">
+        {% else %}
         <a href="{% url 'posts:post_detail' post.id %}" class="post-title-link">
+        {% endif %}
             <h3>{{ post.title }}</h3>
         </a>
-        <p class="post-category">{{ post.category }}</p>
+        <p class="post-category">{{post.category.parent.name}}：{{ post.category }}</p>
     </div>
 
     <div class="post-stats">
