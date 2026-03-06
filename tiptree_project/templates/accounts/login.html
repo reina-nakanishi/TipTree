@@ -2,22 +2,43 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/css/login.css' %}">
     <title>login</title>
 </head>
 <body>
-    <form method="POST">
+    <div class="titles">
+        <h1 class="title">Tip Tree</h1>
+        <h2 class="sub-title">アカウントログイン</h2>
+    </div>
+
+    <form method="POST" class="login-form">
         {% csrf_token %}
-        <h1>Tip Tree</h1>
-        <h2>アカウントログイン</h2>
+
+        <input type="hidden" name="next" value="{{ request.GET.next }}">
+
         {% if messages %}
             {% for message in messages %}
-                <p>{{ message }}<p>
+                <p class="error-message">{{ message }}</p>
             {% endfor %}
         {% endif %}
-        {{ login_form }}
-        <input type="submit" value="ログイン"><br>
-        <a href ="{% url 'accounts:regist' %}">アカウント登録</a><br>
-        <a href ="{% url 'accounts:password_reset' %}">パスワードをお忘れですか？</a>
+
+        <div class="form-group">
+            <label for="id_email">メールアドレス</label>
+            {{ login_form.email }}
+        </div>
+
+        <div class="form-group">
+            <label for="id_password">パスワード</label>
+            {{ login_form.password }}
+        </div>
+
+        <input type="submit" value="ログイン" class="login-btn"><br>
+
+        <div class="links">
+            <a href ="{% url 'accounts:regist' %}">アカウント登録</a>
+            <a href ="{% url 'accounts:password_reset' %}">パスワードをお忘れですか？</a>
+        </div>
     </form>    
 </body>
 </html>
