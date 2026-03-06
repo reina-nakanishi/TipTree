@@ -1,25 +1,55 @@
 {% extends "base.html" %}
 {% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'accounts/css/user_edit.css' %}">
+{% endblock %}
+
 {% block content %}
-<form method="POST" enctype="multipart/form-data">
+<form method="POST" enctype="multipart/form-data" class="user-edit-form" novalidate>
 {% csrf_token %}
 <div class="image-preview">
-    <img id="preview-image" src="{{ user.profile_image.url }}" alt="現在のプロフィール画像">    
+    <img id="preview-image" src="{{ user.profile_image.url }}" alt="現在のプロフィール画像" class="user-icon">    
 </div>
-<input type="file" name="profile_image" id="id_image" accept="image/*">
-<div>
-    {{ user_edit_form.username.label_tag }}
-    {{ user_edit_form.username }}
+<input type="file" name="profile_image" id="id_image" accept="image/*" class="profile-image">
+
+<div class="form-group">
+    <label>
+        {{ user_edit_form.username.label }}
+        {% if user_edit_form.username.field.required %}
+            <span class="required">*</span>
+        {% endif %}
+    </label>
+        
+    <div class="input-area">
+        {{ user_edit_form.username }}
+        <div class="error-message">{{ user_edit_form.username.errors }}</div>
+    </div>
 </div>
-<div>
-    {{ user_edit_form.bio.label_tag }}
-    {{ user_edit_form.bio }}
+<div class="form-group">
+    <label>
+        {{ user_edit_form.bio.label }}
+    </label>
+        
+    <div class="input-area">
+        {{ user_edit_form.bio }}
+        <div class="error-message">{{ user_edit_form.bio.errors }}</div>
+    </div>
 </div>
-<div>
-    {{ user_edit_form.email.label_tag }}
-    {{ user_edit_form.email }}
+<div class="form-group">
+    <label>
+        {{ user_edit_form.email.label }}
+        {% if user_edit_form.email.field.required %}
+            <span class="required">*</span>
+        {% endif %}
+    </label>
+        
+    <div class="input-area">
+        {{ user_edit_form.email }}
+        <div class="error-message">{{ user_edit_form.email.errors }}</div>
+    </div>
 </div>
-<input type="submit" value="保存">
+<input type="submit" value="保存" class="save-btn">
 </form>
 <a href="{% url 'accounts:change_password' %}">パスワード変更</a>
 {% endblock %}
