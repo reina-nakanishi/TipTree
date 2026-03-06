@@ -2,31 +2,53 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/css/regist.css' %}">
     <title>regist</title>
 </head>
 <body>
+    <h1 class="title">新規アカウント登録</h1>
     <form method="POST">
         {% csrf_token %}
-        <h1>新規アカウント登録</h1>
-        <div>
+
+        {% if regist_form.errors %}
+        <div class="error-box">
+
+            {% for field in regist_form %}
+                {% for error in field.errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            {% endfor %}
+
+            {% for error in regist_form.non_field_errors %}
+                <p>{{ error }}</p>
+            {% endfor %}
+
+        </div>
+        {% endif %}
+
+        <div class="form-group">
             {{ regist_form.username.label_tag }}
             {{ regist_form.username }}
         </div>
-        <div>
+        <div class="form-group">
             {{ regist_form.email.label_tag }}
             {{ regist_form.email }}
         </div>
-        <div>
+        <div class="form-group">
             {{ regist_form.password1.label_tag }}
-            {{ regist_form.password1 }}
-            <small>半角英数字を組み合わせて8字以上50字以内で入力してください</small>
+
+            <div class="input-area">
+                {{ regist_form.password1 }}
+                <small>半角英数字を組み合わせて8字以上50字以内で入力してください</small>
+            </div>
         </div>
-        <div>
+        <div class="form-group">
             {{ regist_form.password2.label_tag }}
             {{ regist_form.password2 }}
         </div>
-    <input type="submit" value="確認"><br>
-    <a href ="{% url 'accounts:login' %}">ログイン画面に戻る</a>
-    </form>    
+    <input type="submit" value="確認" class="confirm-btn"><br>
+    </form>
+    <a href ="{% url 'accounts:login' %}" class="link">ログイン画面に戻る</a>    
 </body>
 </html>
