@@ -2,14 +2,16 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/css/confirm.css' %}">
     <title>confirm</title>
 </head>
 <body>
-    <form method="POST" action="{% url 'accounts:confirm'%}">
+    <form method="POST" action="{% url 'accounts:confirm'%}" class="confirm-form">
         {% csrf_token %}
-        <h1>新規アカウント登録 確認</h1>
-        <h2>登録内容をご確認ください</h2>
-        <table>
+        <h1 class="title">新規アカウント登録 確認</h1>
+        <p class="sub-title">登録内容をご確認ください</p>
+        <table class="account-table">
             <tr><td>アカウント名</td><td>{{regist_form.username.value}}</td></tr>
             <tr><td>メールアドレス</td><td>{{regist_form.email.value}}</td></tr>
             <tr><td>パスワード</td><td><pre>{{ password_mask }}</pre></td></tr>
@@ -17,8 +19,10 @@
         {% for field in regist_form %}
             {{field.as_hidden}}
         {% endfor %}
-        <button type="submit" name="action" value="back">戻る</button>
-        <button type="submit" name="action" value="done">登録</button>
+        <div class="action-btn">
+            <button type="submit" name="action" value="back" class="back-btn">戻る</button>
+            <button type="submit" name="action" value="done" class="done-btn">登録</button>
+        </div>
     </form>    
 </body>
 </html>
