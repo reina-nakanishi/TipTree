@@ -4,37 +4,53 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'posts/css/post_grid.css' %}">
 <link rel="stylesheet" href="{% static 'posts/css/post_card.css' %}">
+<link rel="stylesheet" href="{% static 'accounts/css/my_page.css' %}">
 {% endblock %}
 {% block content %}
-<img src="{{ user.profile_image.url }}"></br>
-<table>
-    <tr><td>アカウント名:</td><td>{{user.username}}</td></tr>
-    <tr><td>自己紹介:</td><td>{{user.bio}}</td></tr>
-</table>
+<div class="my_page">
+  <img src="{{ user.profile_image.url }}" class="user-icon">
 
-<span>マイアクション</span>
-<div class="my-action">
-  <span>
-    <a href="{% url 'posts:saved_post_list' %}"><i class="fas fa-bookmark"></i>あとで見る</a>
-  </span>
-  <span>
-    <a href="{% url 'posts:helped_post_list' %}"><i class="far fa-thumbs-up"></i>役立った</a>
-  </span>
+  <table class="profile-table">
+      <tr>
+        <td>アカウント名</td>
+        <td class="colon">:</td>
+        <td>{{user.username}}</td>
+      </tr>
+      <tr>
+        <td>自己紹介</td>
+        <td class="colon">:</td>
+        <td>{{user.bio}}</td>
+      </tr>
+  </table>
+
+  <span class="my-action-title">マイアクション</span>
+  <div class="my-action">
+    <span>
+      <a href="{% url 'posts:saved_post_list' %}"><i class="fas fa-bookmark"></i>あとで見る</a>
+    </span>
+    <span>
+      <a href="{% url 'posts:helped_post_list' %}"><i class="far fa-thumbs-up"></i>役立った</a>
+    </span>
+  </div>
+  <div class="post-action-btn">
+    {% if request.user == page_user %}
+    <a href="{% url 'accounts:user_edit' %}" class="btn">
+      編集
+    </a>
+    {% endif %}
+    <form action="{% url 'accounts:logout' %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="logout-btn">ログアウト</button>
+    </form>
+  </div>
+
 </div>
-
-<a href="{% url 'accounts:user_edit' %}">
-    <button type="button">編集</button>
-</a>
-<form action="{% url 'accounts:logout' %}" method="post">
-    {% csrf_token %}
-    <input type="submit" value="ログアウト">
-</form>
-<a href ="{% url 'accounts:change_password' %}">パスワード変更</a>
 <div class="post-grid">
   {% for post in page_obj %}
     {% include "components/post_card.html" %}
   {% endfor %}
 </div>
+{% if page_obj.paginator.num_pages > 1 %}
 <div class="pagination">
   {% if page_obj.has_previous %}
     <a href="?page=1">&laquo;</a>
@@ -54,4 +70,5 @@
     <a href="?page={{ page_obj.paginator.num_pages }}">&raquo;</a>
   {% endif %}
 </div>
+{% endif %}
 {% endblock %}
