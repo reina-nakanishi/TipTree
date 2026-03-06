@@ -6,6 +6,7 @@
   }
 
   .video-wrapper {
+    border-radius: 20px;
     width: 100%;
     aspect-ratio: 16 / 9; 
     background: #000;
@@ -16,6 +17,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
   }
 
   .post-header{
@@ -30,6 +32,30 @@
     gap: 12px;
   }
 
+  .edit-btn,
+  .post-delete {
+    padding: 8px 16px;
+    background: #f2f2f2;
+    border-radius: 20px;
+    font-size: 14px;
+    white-space: nowrap;
+    transition: 0.2s;
+    font-weight: 500;
+  
+    border: none;
+  }
+
+  a,
+  a:hover{
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .edit-btn:hover,
+  .post-delete:hover {
+      background: #e5e5e5;
+  }
+
   .user-icon {
     width: 50px;
     height: 50px;
@@ -37,13 +63,14 @@
     margin-right: 15px;
   }
 
-  .post-stats {
+  .maincontent .post-stats {
     display: flex;
     align-items: center;
     gap: 16px;
     margin-left: auto;
     font-size: 28px;
     color: #555;
+    flex-shrink: 0;
   }
 
   .post-stats .help-btn,
@@ -106,9 +133,27 @@
   }
 
   .supplement-form button,
-  .comment-form button {
-    width: auto;
-    white-space: nowrap; 
+  .comment-form button,
+  .supplement-reply-form button,
+  .comment-reply-form button {
+    display: block;
+    padding: 8px 16px;
+    background: #98FB98;
+    border-radius: 20px;
+    font-size: 14px;
+    white-space: nowrap;
+    transition: 0.2s;
+    font-weight: 500;
+    align-self: flex-end;
+  
+    border: none;
+  }
+
+  .supplement-form button:hover,
+  .comment-form button:hover,
+  .supplement-reply-form button:hover,
+  .comment-reply-form button:hover {
+    background: #90EE90;
   }
 
   .supplement-item,
@@ -161,10 +206,22 @@
     margin-top: 4px;
   }
 
-  .reply-btn,
-  .open-delete-modal {
-    align-self: flex-start;
-    padding: 4px 8px;
+  .delete-btn,
+  .reply-btn {
+    padding: 8px 16px;
+    background: none;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: 0.2s;
+    cursor: pointer;
+    border-radius: 20px;
+    border: none;
+  }
+
+  .delete-btn:hover,
+  .reply-btn:hover {
+    background: #f2f2f2;
   }
 
   .supplement-reply-form textarea,
@@ -243,4 +300,36 @@
     padding: 8px 16px;
     border-radius: 6px;
     cursor: pointer;
+  }
+
+  .side-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.maincontent {
+  min-width: 0;
+}
+
+.supplement-replies,
+.comment-replies {
+  display: none;
+}
+
+  .toggle-replies {
+    align-self: flex-start;
+    padding: 8px 16px;
+    background: none;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: 0.2s;
+    cursor: pointer;
+    border-radius: 20px;
+    border: none;
+  }
+
+  .toggle-replies:hover {
+    background: #f2f2f2;
   }
