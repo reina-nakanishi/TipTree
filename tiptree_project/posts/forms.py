@@ -1,5 +1,5 @@
 from django import forms
-from .models import Post,Supplements,Comments,SupplementReply,CommentReply
+from .models import Post,Supplements,Comments,SupplementReply,CommentReply,Category
 from tempfile import NamedTemporaryFile
 import subprocess, json, os
 from django.core.exceptions import ValidationError
@@ -7,16 +7,32 @@ from django.core.exceptions import ValidationError
 
 class CreatePostForm(forms.ModelForm):
     
+    parent_category = forms.ModelChoiceField(
+        queryset=Category.objects.filter(parent__isnull=True),
+        required=True,
+        widget=forms.Select(attrs={"id": "parent-category"}),
+        label="カテゴリ"
+    )
+    category = forms.ModelChoiceField(
+        queryset=Category.objects.none(),
+        required=True,
+        widget=forms.Select(attrs={"id": "child-category"}),
+        label="サブカテゴリ"
+    )
+    
     class Meta:
         model = Post
-        fields = ('title','category','thumbnail','video','content','description')
+        fields = ('title','parent_category','category','thumbnail','video','content','description')
         labels = {
             'title':'タイトル',
-            'category':'カテゴリー',
             'thumbnail':'サムネイル画像',
             'video':'動画',
             'content':'本文',
             'description':'補足説明'
+        }
+        widgets = {
+            "content": forms.Textarea(attrs={"rows": 10}),
+            "description": forms.Textarea(attrs={"rows": 4}),
         }
         error_messages ={
             'title':{
@@ -45,6 +61,13 @@ class CreatePostForm(forms.ModelForm):
             self.fields['thumbnail'].required = False
             self.fields['video'].required = False
             
+        if 'parent_category' in self.data:
+            try:
+                parent_id = int(self.data.get('parent_category'))
+                self.fields['category'].queryset = Category.objects.filter(parent_id=parent_id)
+            except (ValueError, TypeError):
+                pass
+                    
     def get_video_duration(self,file):
         from tempfile import NamedTemporaryFile
         import subprocess, json, os
@@ -119,16 +142,27 @@ class CreatePostForm(forms.ModelForm):
         
 class EditPostForm(forms.ModelForm):
     
+    parent_category = forms.ModelChoiceField(
+        queryset=Category.objects.filter(parent=None),
+        label="カテゴリ"
+    )
+    
     class Meta:
         model = Post
-        fields = ('title','category','thumbnail','video','content','description')
+        fields = ('title','parent_category','category','thumbnail','video','content','description')
         labels = {
             'title':'タイトル',
-            'category':'カテゴリー',
+            'category':'サブカテゴリ',
             'thumbnail':'サムネイル画像',
             'video':'動画',
             'content':'本文',
             'description':'補足説明'
+        }
+        widgets = {
+            "content": forms.Textarea(attrs={"rows": 10}),
+            "description": forms.Textarea(attrs={"rows": 4}),
+            "thumbnail": forms.FileInput(),
+            "video": forms.FileInput(),
         }
         error_messages ={
             'title':{
@@ -148,6 +182,12 @@ class EditPostForm(forms.ModelForm):
                 'required':'本文を入力してください。'
             }
         }
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if self.instance and self.instance.category:
+            self.fields["parent_category"].initial = self.instance.category.parent
 
 
 class CommentForm(forms.ModelForm):
