@@ -1,6 +1,9 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from . import forms
-from .models import Post,SavePost,HelpPost,Supplements,Comments,CommentReply,SupplementReply
+from django.db.models import Q,Count
+from django.http import JsonResponse
+from .models import Post,Category,SavePost,HelpPost,Supplements,Comments,CommentReply,SupplementReply
+from notifications.models import Notification
 from django.contrib.auth.decorators import login_required
 import os, uuid
 from django.core.paginator import Paginator
@@ -13,6 +16,14 @@ logger = logging.getLogger(__name__)
 
 @login_required
 def create_post(request):
+
+    if 'back_form_data' in request.session:
+        create_post_form = forms.CreatePostForm(request.session.pop('back_form_data'))
+        return render(request, "posts/create_post.html", {
+            "create_post_form": create_post_form
+        })
+    
+    
     create_post_form = forms.CreatePostForm(request.POST or None, request.FILES or None)
 
     if create_post_form.is_valid():
@@ -68,6 +79,17 @@ def create_post(request):
     )
     
 
+def load_child_categories(request):
+    parent_id = request.GET.get("parent_id")
+    children = Category.objects.filter(parent_id=parent_id)
+
+    data = [
+        {"id": c.id, "name": c.name}
+        for c in children
+    ]
+    return JsonResponse(data, safe=False)
+
+
 @login_required
 def confirm(request):
     if request.method != "POST":
@@ -86,11 +108,10 @@ def confirm(request):
             except Exception as e:
                 logger.warning(f"Temp file delete failed: {p} ({e})")
         request.session.pop('temp_post_files', None)  #temp_post_filesがあれば削除
-        return render(request, "posts/create_post.html", context={
-            'create_post_form': create_post_form
-        })
+        request.session['back_form_data'] = request.POST
+        return redirect('posts:create_post')
 
-    elif action == 'done' and create_post_form.is_valid():
+    elif action == 'done':
         post = create_post_form.save(commit=False)
         post.user = request.user
 
@@ -124,7 +145,7 @@ def confirm(request):
 
 @login_required
 def edit_post(request, post_id):
-    post = get_object_or_404(Post, post_id)
+    post = get_object_or_404(Post, id=post_id)
     edit_post_form = forms.EditPostForm(
         request.POST or None, request.FILES or None, instance=post
     )
@@ -147,6 +168,14 @@ def toggle_save(request, post_id):
         saved.delete()
     else:
         SavePost.objects.create(user=user, post=post)
+        
+        if post.user != user:
+            Notification.objects.create(
+                to_user=post.user,
+                from_user=user,
+                notification_type="save",
+                post=post,
+            )
 
     return redirect(request.META.get("HTTP_REFERER", "/"))
 
@@ -177,6 +206,14 @@ def toggle_help(request, post_id):
         helped.delete()
     else:
         HelpPost.objects.create(user=user, post=post)
+        
+        if post.user != user:
+            Notification.objects.create(
+                to_user=post.user,
+                from_user=user,
+                notification_type="help",
+                post=post,
+            )
 
     return redirect(request.META.get("HTTP_REFERER", "/"))
 
@@ -199,20 +236,45 @@ def helped_post_list(request):
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
 
-    comments = post.comments.select_related('user').order_by('create_at')
-    supplements = post.supplements.select_related('user').order_by('create_at')
+    comments = post.comments.select_related('user').order_by('-create_at')
+    supplements = post.supplements.select_related('user').order_by('-create_at')
 
     comment_form = forms.CommentForm()
+    comment_reply_form = forms.CommentReplyForm()
     supplement_form = forms.SupplementForm()
     supplement_reply_form = forms.SupplementReplyForm()
+    
+    if not request.user.is_authenticated:
 
+        comment_form.fields['content'].widget.attrs.update({
+            "placeholder": "ログインするとコメントできます",
+        })
+
+        comment_reply_form.fields['content'].widget.attrs.update({
+            "placeholder": "ログインすると返信できます",
+        })
+
+        supplement_form.fields['content'].widget.attrs.update({
+            "placeholder": "ログインすると補足できます",
+        })
+
+        supplement_reply_form.fields['content'].widget.attrs.update({
+            "placeholder": "ログインすると返信できます",
+        })
+
+    related_posts = Post.objects.filter(
+        category__parent=post.category.parent
+    ).exclude(id=post.id)[:10]
+    
     return render(request, 'posts/post_detail.html', {
         'post': post,
         'comments': comments,
         'supplements': supplements,
         'comment_form': comment_form,
+        'comment_reply_form':comment_reply_form,
         'supplement_form': supplement_form,
         'supplement_reply_form': supplement_reply_form,
+        "related_posts": related_posts,
     })
     
     
@@ -236,6 +298,15 @@ def comment_create(request, post_id):
             comment.post = post
             comment.user = request.user
             comment.save()
+
+            if comment.post.user != request.user:
+                Notification.objects.create(
+                    to_user=comment.post.user,
+                    from_user=request.user,
+                    notification_type="comment",
+                    post=comment.post,
+                    comment=comment,
+                )
 
     return redirect('posts:post_detail', post_id=post.id)
 
@@ -261,6 +332,17 @@ def comment_reply(request, comment_id):
             comment_reply.user = request.user
             comment_reply.save()
 
+            comment_author = comment_reply.comment.user
+
+            if comment_author != request.user:
+                Notification.objects.create(
+                    to_user=comment_author,
+                    from_user=request.user,
+                    notification_type="comment_reply",
+                    post=comment_reply.comment.post,
+                    comment=comment_reply.comment,
+                )
+            
     return redirect('posts:post_detail', post_id=comment.post.id)
 
 
@@ -284,6 +366,15 @@ def supplement_create(request, post_id):
             supplement.post = post
             supplement.user = request.user
             supplement.save()
+            
+            if supplement.post.user != request.user:
+                Notification.objects.create(
+                    to_user=supplement.post.user,
+                    from_user=request.user,
+                    notification_type="supplement",
+                    post=supplement.post,
+                    supplement=supplement,
+                )
 
     return redirect('posts:post_detail', post_id=post.id)
 
@@ -308,6 +399,17 @@ def supplement_reply(request, supplement_id):
             supplement_reply.supplement = supplement
             supplement_reply.user = request.user
             supplement_reply.save()
+            
+            supplement_author = supplement_reply.supplement.user
+            
+            if supplement_author != request.user:
+                Notification.objects.create(
+                    to_user=supplement_author,
+                    from_user=request.user,
+                    notification_type="supplement_reply",
+                    post=supplement_reply.supplement.post,
+                    supplement=supplement_reply.supplement,
+                )
 
     return redirect('posts:post_detail', post_id=supplement.post.id)
 
@@ -319,3 +421,39 @@ def supplement_reply_delete(request, supplement_reply_id):
     if request.method == "POST":
         supplement_reply.delete()
         return redirect(request.META.get("HTTP_REFERER", "/"))
+    
+
+def search(request):
+    query = request.GET.get('q', '').strip()
+    posts = []
+
+    paginator = Paginator(posts, 12)  # 1ページ12件
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    if query:
+        posts = Post.objects.filter(
+            Q(title__icontains=query) |
+            Q(content__icontains=query)
+        ).order_by('-created_at')
+
+    return render(request, 'posts/search.html', {
+        'query': query,
+        'posts': posts,
+        'page_obj': page_obj,
+    })
+    
+    
+def ranking(request):
+    posts = Post.objects.annotate(
+        help_count_annotated=Count("helped_users")
+    ).order_by("-help_count_annotated", "-created_at")
+
+    paginator = Paginator(posts, 12)  # 1ページ12件
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    return render(request, "posts/ranking.html", {
+        "posts": posts,
+        'page_obj': page_obj,
+    })
