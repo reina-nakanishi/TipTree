@@ -5,6 +5,7 @@ app_name = 'posts'
 
 urlpatterns = [
     path('create_post', views.create_post, name = 'create_post'),
+    path("load_child_categories/", views.load_child_categories, name="load_child_categories"),
     path('confirm', views.confirm, name = 'confirm'),
     path('edit_post/<int:post_id>', views.edit_post, name = 'edit_post'),
     path("<int:post_id>/save/", views.toggle_save, name="toggle_save"),
@@ -21,4 +22,6 @@ urlpatterns = [
     path("supplement_reply/<int:supplement_reply_id>/delete/",views.supplement_reply_delete,name="supplement_reply_delete"),
     path("comment/<int:comment_id>/delete/",views.comment_delete,name="comment_delete"),
     path("comment_reply/<int:comment_reply_id>/delete/",views.comment_reply_delete,name="comment_reply_delete"),
+    path('search/', views.search, name='search'),
+    path('ranking/', views.ranking, name = 'ranking'),
 ]
