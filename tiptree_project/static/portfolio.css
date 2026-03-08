@@ -1,0 +1,33 @@
+.container {
+    text-align: center;
+}
+
+img {
+    width: 600px;
+}
+
+.links {
+    text-align: center;
+}
+
+.links a {
+    display: block;
+    margin: 8px 0;
+}
+
+button {
+    display: block;
+    margin: 10px auto;
+    padding: 8px 16px;
+    background: #98FB98;
+    border-radius: 20px;
+    font-size: 14px;
+    white-space: nowrap;
+    transition: 0.2s;
+  
+    border: none;
+}
+
+button:hover {
+  background: #90EE90;
+}
