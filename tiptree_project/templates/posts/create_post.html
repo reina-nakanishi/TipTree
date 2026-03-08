@@ -1,21 +1,42 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'posts/css/create_post.css' %}">
+{% endblock %}
 {% block content %}
 <body>
-    <form method="POST" enctype="multipart/form-data">
+    <form method="POST" enctype="multipart/form-data" class="create-post-form" novalidate>
         {% csrf_token %}
         {% for field in create_post_form %}
-            <div>
-                {{field.label}}
+
+        <div class="form-group">
+
+            <label for="{{ field.id_for_label }}">
+                {{ field.label }}
                 {% if field.field.required %}
-                    <span style="color: red;">*</span>
+                    <span class="required">*</span>
                 {% endif %}
+            </label>
+
+            <div class="input-area">
                 {{ field }}
+
                 {% if field.errors %}
-                    {{ field.errors }}
+                    <div class="error-message">
+                        {{ field.errors }}
+                    </div>
                 {% endif %}
             </div>
+
+        </div>
+
         {% endfor %}
-    <input type="submit" value="確認"><br>
+        <input type="submit" value="確認" class="confirm-btn"><br>
     </form>    
 </body>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'posts/js/create_post.js' %}"></script>
 {% endblock %}
