@@ -4,10 +4,11 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'posts/css/post_grid.css' %}">
 <link rel="stylesheet" href="{% static 'posts/css/post_card.css' %}">
+<link rel="stylesheet" href="{% static 'posts/css/my_action.css' %}">
 {% endblock %}
 
 {% block content %}
-<h2>役立った</h2>
+<h2 class="title">役立った</h2>
 
   {% if page_obj %}
     <div class="post-grid">
