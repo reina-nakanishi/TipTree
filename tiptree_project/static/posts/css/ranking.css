@@ -1,0 +1,49 @@
+.ranking-title {
+  margin: 20px 10px;
+}
+
+.rank-badge {
+  position: absolute;
+  top: -20px;
+  left: -14px;
+  z-index: 10;
+}
+
+.crown-badge {
+  position: relative;
+  display: inline-block;
+  font-size: 28px;
+}
+
+/* 王冠アイコン */
+.crown-badge i {
+  display: block;
+}
+
+/* 数字を重ねる */
+.rank-text {
+  position: absolute;
+  top: 60%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* 金銀銅 */
+.gold i { color: #f5c518; }
+.silver i { color: #c0c0c0; }
+.bronze i { color: #cd7f32; }
+
+.ranking-post {
+  position: relative;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin: 40px 0 8px;
+  gap: 8px;
+}
