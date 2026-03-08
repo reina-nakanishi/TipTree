@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'posts/css/post_grid.css' %}">
+<link rel="stylesheet" href="{% static 'posts/css/post_card.css' %}">
+<link rel="stylesheet" href="{% static 'posts/css/ranking.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<h2 class="ranking-title">ランキング</h2>
+
+<div class="post-grid">
+
+{% for post in posts %}
+
+  <div class="ranking-post">
+
+    <div class="rank-badge">
+
+      {% if forloop.counter == 1 %}
+        <span class="crown-badge gold">
+          <i class="fas fa-crown"></i>
+          <span class="rank-text">1</span>
+        </span>
+
+      {% elif forloop.counter == 2 %}
+        <span class="crown-badge silver">
+          <i class="fas fa-crown"></i>
+          <span class="rank-text">2</span>
+        </span>
+
+      {% elif forloop.counter == 3 %}
+        <span class="crown-badge bronze">
+          <i class="fas fa-crown"></i>
+          <span class="rank-text">3</span>
+        </span>
+
+      {% else %}
+        <span class="rank-number">{{ forloop.counter }}</span>
+      {% endif %}
+
+    </div>
+
+    {% if not user.is_authenticated and forloop.counter <= 3 %}
+      {% include "components/post_card.html" with login_redirect=True %}
+    {% else %}
+      {% include "components/post_card.html" with login_redirect=False %}
+    {% endif %}
+
+  </div>
+{% endfor %}
+</div>
+{% if page_obj.paginator.num_pages > 1 %}
+<div class="pagination">
+  {% if page_obj.has_previous %}
+    <a href="?page=1">&laquo;</a>
+    <a href="?page={{ page_obj.previous_page_number }}">&lt;</a>
+  {% endif %}
+
+  {% for num in page_obj.paginator.page_range %}
+    {% if num == page_obj.number %}
+      <span class="current">[{{ num }}]</span>
+    {% elif num >= page_obj.number|add:'-3' and num <= page_obj.number|add:'3' %}
+      <a href="?page={{ num }}">{{ num }}</a>
+    {% endif %}
+  {% endfor %}
+
+  {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}">&gt;</a>
+    <a href="?page={{ page_obj.paginator.num_pages }}">&raquo;</a>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}
