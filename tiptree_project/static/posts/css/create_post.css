@@ -1,0 +1,99 @@
+.create-post-form {
+    max-width: 700px;
+    margin: 50px auto;
+}
+
+.form-group {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    width: 140px;     
+    text-align: right;  
+    margin-right: 10px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.required {
+    color: red;
+}
+
+.form-group select {
+    width: auto;
+    max-width: 150px;
+}
+
+.form-group input[type="text"],
+.form-group textarea {
+    width: 100%;
+    max-width: 500px;             
+    padding: 3;
+    resize: none;
+}
+
+.input-area {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 500px;
+}
+
+.error-message {
+    color: red;
+}
+
+.error-message ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.confirm-btn {
+    display: block;
+    margin: 30px auto 0;
+    padding: 8px 16px;
+    background: #98FB98;
+    border-radius: 20px;
+    font-size: 14px;
+    white-space: nowrap;
+    transition: 0.2s;
+  
+    border: none;
+}
+
+.confirm-btn:hover {
+  background: #90EE90;
+}
+
+.current-label {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 0;
+}
+
+.change-label {
+  font-size: 13px;
+  color: #666;
+  margin: 10px 0 5px;
+}
+
+.preview-img {
+  width: 200px;
+  border-radius: 10px;
+  display: block;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+  max-width: none;
+}
+
+.preview-video {
+  width: 250px;
+  border-radius: 10px;
+  display: block;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+  max-width: none;
+}
