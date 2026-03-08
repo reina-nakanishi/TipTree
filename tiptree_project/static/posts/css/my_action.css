@@ -1,0 +1,10 @@
+.title {
+    margin: 20px 10px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin: 40px 0 8px;
+  gap: 8px;
+}
