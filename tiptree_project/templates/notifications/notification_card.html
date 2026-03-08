@@ -1,0 +1,32 @@
+<div class="notification-container">
+  <a href="{% url 'notifications:redirect' notification.id %}"
+    class="notification-item {% if not notification.is_read %}unread{% endif %}">
+    <div class="notification-main">
+      {% if not notification.is_read %}
+        <i class="fas fa-circle"></i>
+      {% endif %}
+
+      <span class="icon">
+      {% if notification.notification_type == "comment" %}
+          <i class="fa-regular fa-comment-dots"></i>
+      {% elif notification.notification_type == "comment_reply" or "supplement_reply" %}
+          <i class="fa-solid fa-reply"></i>
+      {% elif notification.notification_type == "supplement" %}
+          <i class="fa-solid fa-pen"></i>
+      {% elif notification.notification_type == "help" %}
+          <i class="fa-solid fa-thumbs-up"></i>
+      {% elif notification.notification_type == "save" %}
+          <i class="fa-regular fa-bookmark"></i>
+      {% endif %}
+      </span>
+
+      <span class="text">
+        {{ notification.get_message }}
+      </span>
+    </div>
+
+    <div class="notification-date">
+      {{ notification.created_at|date:"Y/m/d H:i" }}
+    </div>
+  </a>
+</div>
