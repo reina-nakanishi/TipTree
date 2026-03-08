@@ -1,20 +1,110 @@
 {% extends "base.html" %}
 {% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'posts/css/create_post.css' %}">
+{% endblock %}
+
 {% block content %}
-<form method="POST" enctype="multipart/form-data">
+
+<form method="POST" enctype="multipart/form-data" class="create-post-form">
 {% csrf_token %}
-{% for field in create_post_form %}
-    <div>
-        {{field.label}}
-        {% if field.field.required %}
-            <span style="color: red;">*</span>
-        {% endif %}
-        {{ field }}
-        {% if field.errors %}
-            {{ field.errors }}
-        {% endif %}
+
+
+<div class="form-group">
+    <label>
+    {{ edit_post_form.title.label }}
+    {% if edit_post_form.title.field.required %}
+        <span class="required">*</span>
+    {% endif %}
+    </label>
+    <div class="input-area">
+        {{ edit_post_form.title }}
+        <div class="error-message">{{ edit_post_form.title.errors }}</div>
     </div>
-{% endfor %}
-<input type="submit" value="更新する">
+</div>
+
+<div class="form-group">
+    <label>
+        {{ edit_post_form.parent_category.label }}
+        {% if edit_post_form.title.field.required %}
+            <span class="required">*</span>
+        {% endif %}
+    </label>
+    <div class="input-area">
+        {{ edit_post_form.parent_category }}
+        <div class="error-message">{{ edit_post_form.parent_category.errors }}</div>
+    </div>
+</div>
+
+<div class="form-group">
+    <label>
+    {{ edit_post_form.category.label }}
+    {% if edit_post_form.category.field.required %}
+        <span class="required">*</span>
+    {% endif %}
+    </label>
+    <div class="input-area">
+        {{ edit_post_form.category }}
+        <div class="error-message">{{ edit_post_form.category.errors }}</div>
+    </div>
+</div>
+
+<div class="form-group">
+    <label>サムネイル</label>
+    <div class="input-area">
+        {% if edit_post_form.instance.thumbnail %}
+            <p class="current-label">現在の画像</p>
+            <img src="{{ edit_post_form.instance.thumbnail.url }}" class="preview-img">
+        {% endif %}
+
+        <p class="change-label">新しい画像を選択</p>
+        {{ edit_post_form.thumbnail }}
+        <div class="error-message">{{ edit_post_form.thumbnail.errors }}</div>
+    </div>
+</div>
+
+<div class="form-group">
+    <label>動画</label>
+    <div class="input-area">
+        {% if edit_post_form.instance.video %}
+            <p class="current-label">現在の動画</p>
+            <video class="preview-video" controls>
+                <source src="{{ edit_post_form.instance.video.url }}">
+            </video>
+        {% endif %}
+
+        <p class="change-label">新しい動画を選択</p>
+        {{ edit_post_form.video }}
+        <div class="error-message">{{ edit_post_form.video.errors }}</div>
+    </div>
+</div>
+
+<div class="form-group">
+    <label>
+    {{ edit_post_form.content.label }}
+        {% if edit_post_form.content.field.required %}
+            <span class="required">*</span>
+        {% endif %}
+    </label>
+    <div class="input-area">
+        {{ edit_post_form.content }}
+        <div class="error-message">{{ edit_post_form.content.errors }}</div>
+    </div>
+</div>
+
+<div class="form-group">
+<label>
+    {{ edit_post_form.description.label }}
+</label>
+    <div class="input-area">
+        {{ edit_post_form.description }}
+        <div class="error-message">{{ edit_post_form.description.errors }}</div>
+    </div>
+</div>
+
+<input type="submit" value="更新する" class="confirm-btn">
+
 </form>
+
 {% endblock %}
