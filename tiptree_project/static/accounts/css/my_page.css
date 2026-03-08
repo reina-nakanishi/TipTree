@@ -1,0 +1,87 @@
+.my_page .user-icon {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: block;
+    margin: 0 auto;
+  }
+
+.profile-table {
+    margin: 10px auto;
+}
+
+.profile-table .label {
+    text-align: right;
+    padding-right: 8px;
+}
+
+.profile-table .colon {
+    width: 10px;
+    text-align: center;
+}
+
+.my-action-title {
+  display: block;
+  text-align: center;
+  margin-top: 20px;
+  transform: translateX(-60px);
+}
+
+.my-action {
+  display: flex;
+  justify-content: center;
+  gap: 20px; 
+}
+
+.my-action a {
+    color: #333;
+}
+
+.post-action-btn {
+  display: flex;
+  justify-content: center;  /* 横中央 */
+  align-items: center;      /* 縦中央 */
+  gap: 12px;                /* ボタン同士の間隔 */
+  margin-top: 20px;
+}
+
+.btn {
+  padding: 8px 16px;
+  background: #f2f2f2;
+  border-radius: 20px;
+  font-size: 14px;
+  white-space: nowrap;
+  transition: 0.2s;
+}
+
+.btn:hover {
+  background: #e5e5e5;
+}
+
+.logout-btn {
+  padding: 8px 16px;
+  background: #F08080;
+  border-radius: 20px;
+  font-size: 14px;
+  white-space: nowrap;
+  transition: 0.2s;
+  
+  border: none;
+}
+
+.logout-btn:hover {
+  background: #CD5C5C;
+}
+
+.change-password {
+  display: block;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin: 40px 0 8px;
+  gap: 8px;
+}

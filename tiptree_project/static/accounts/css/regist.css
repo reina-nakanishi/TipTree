@@ -1,0 +1,74 @@
+.title {
+    margin-top: 30px;
+    text-align: center;
+}
+
+form {
+    width: 420px;
+    margin: 60px auto;  
+}
+
+form .error-box {
+    text-align: center;
+    color: red;
+}
+
+.form-group {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    width: 140px;     
+    text-align: right;  
+    margin-right: 10px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.form-group input {
+    flex: 1;             
+    padding: 8px;
+}
+
+.input-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;            
+}
+
+.input-area input {
+    padding: 8px;
+}
+
+.input-area small {
+    display: block;
+    font-size: 12px;
+    margin-top: 6px;
+    max-width: 250px;
+    white-space: nowrap;
+}
+
+.confirm-btn {
+    display: block;
+    margin: 30px auto 0;
+    padding: 8px 16px;
+    background: #98FB98;
+    border-radius: 20px;
+    font-size: 14px;
+    white-space: nowrap;
+    transition: 0.2s;
+  
+    border: none;
+}
+
+.confirm-btn:hover {
+  background: #90EE90;
+}
+
+.link {
+    display: block;
+    text-align: center;
+    margin-top: 0px;
+}

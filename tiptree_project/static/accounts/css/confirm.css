@@ -1,0 +1,68 @@
+.title {
+    text-align: center;
+}
+
+.sub-title {
+    text-align: center;
+    color: red;
+    margin-top: 50px;
+}
+
+.account-table {
+    margin: 20px auto;   /* ← 横中央 */
+    border-collapse: collapse;
+}
+
+.account-table td {
+    padding: 8px 0;
+}
+
+.account-table td:first-child {
+    width: 140px;     
+    text-align: right;  
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.account-table td:nth-child(2) {          
+    padding-left: 20px;
+}
+
+.action-btn {
+    display: flex;
+    justify-content: center;  /* 横中央 */
+    align-items: center;      /* 縦中央 */
+    gap: 16px;                /* ボタン同士の間隔 */
+    margin-top: 50px;
+}
+
+.back-btn {
+    padding: 8px 16px;
+    background: #f2f2f2;
+    border-radius: 20px;
+    font-size: 14px;
+    white-space: nowrap;
+    transition: 0.2s;
+  
+    border: none;
+}
+
+.back-btn:hover {
+    background: #e5e5e5;
+}
+
+.done-btn {
+    display: block;
+    padding: 8px 16px;
+    background: #98FB98;
+    border-radius: 20px;
+    font-size: 14px;
+    white-space: nowrap;
+    transition: 0.2s;
+  
+    border: none;
+}
+
+.done-btn:hover {
+  background: #90EE90;
+}
