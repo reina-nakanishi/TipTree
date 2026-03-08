@@ -3,6 +3,7 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'posts/css/post_detail.css' %}">
+<link rel="stylesheet" href="{% static 'posts/css/post_card.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -17,7 +18,13 @@
 
         <div class="post-meta">
             <h1 class=post-title>{{ post.title }}</h1>
-            <h3 class=post-category>{{ post.category }}</h3>
+            <h3 class=post-category>
+                {% if post.category.parent %}
+                    {{ post.category.parent.name }} : {{ post.category.name }}
+                {% else %}
+                    {{ post.category.name }}
+                {% endif %}
+            </h3>
         </div>
 
         <div class="post-header">
@@ -27,9 +34,9 @@
 
                 {% if request.user == post.user %}
 
-                    <a href="{% url 'posts:edit_post' post.id %}">編集</a>
+                    <a href="{% url 'posts:edit_post' post.id %}" class="edit-btn">編集</a>
                     <button  
-                        class="open-delete-modal" 
+                        class="open-delete-modal post-delete" 
                         data-url="{% url 'posts:post_delete' post.id %}"
                         data-text="この投稿を削除しますか？"
                         data-content="{{ post.title | truncatechars:30}}"
@@ -41,31 +48,43 @@
             </div>
 
             <div class="post-stats">
-                <form action="{% url 'posts:toggle_help' post.id %}" method="post">
-                    {% csrf_token %}
-                    <button type="submit" class="help-btn">
-                        {% if user in post.helped_users.all %}
-                        <i class="fas fa-thumbs-up"></i>
-                        {% else %}
-                        <i class="far fa-thumbs-up"></i>
-                        {% endif %}
-                    </button>
-                </form>
+                {% if user.is_authenticated %}
+                    <form action="{% url 'posts:toggle_help' post.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="help-btn">
+                            {% if user in post.helped_users.all %}
+                            <i class="fas fa-thumbs-up"></i>
+                            {% else %}
+                            <i class="far fa-thumbs-up"></i>
+                            {% endif %}
+                        </button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="help-btn login-required">
+                    <i class="far fa-thumbs-up"></i>
+                    </a>
+                {% endif %}
 
                 <span class="comment_count">
                     <i class="far fa-comment-dots"></i>
                     <span>{{ post.comment_count }}</span>
                 </span>
-                <form action="{% url 'posts:toggle_save' post.id %}" method="post">
-                    {% csrf_token %}
-                    <button type="submit" class="save-btn">
-                        {% if user in post.saved_users.all %}
-                        <i class="fas fa-bookmark"></i>
-                        {% else %}
-                        <i class="far fa-bookmark"></i>
-                        {% endif %}
-                    </button>
-                </form>
+                {% if user.is_authenticated %}
+                    <form action="{% url 'posts:toggle_save' post.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="save-btn">
+                            {% if user in post.saved_users.all %}
+                            <i class="fas fa-bookmark"></i>
+                            {% else %}
+                            <i class="far fa-bookmark"></i>
+                            {% endif %}
+                        </button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="save-btn login-required">
+                    <i class="far fa-bookmark"></i>
+                    </a>
+                {% endif %}
             </div>
         </div>
 
@@ -93,13 +112,13 @@
         <div class="supplement-list">
             {% for supplement in supplements %}
             <div class="supplement-item">
-                <img src="{{ post.user.profile_image.url }}"
+                <img src="{{ supplement.user.profile_image.url }}"
                     class="supplement-user-icon"
                     alt="ユーザーアイコン">
 
                 <div class="supplement-content">
                     <div class="supplement-meta">
-                        <span class="supplement-username">{{ post.user.username }}</span>
+                        <span class="supplement-username">{{ supplement.user.username }}</span>
                         <small>{{ supplement.create_at }}</small>
                     </div>
 
@@ -114,7 +133,7 @@
 
                         {% if request.user == supplement.user %}
                         <button  
-                            class="open-delete-modal" 
+                            class="open-delete-modal delete-btn" 
                             data-url="{% url 'posts:supplement_delete' supplement.id %}"
                             data-text="この補足説明を削除しますか？"
                             data-content="{{ supplement.content | truncatechars:30 }}"
@@ -124,11 +143,17 @@
                         {% endif %}
                     </div>
 
-                    <form method="post" class="supplement-reply-form">
+                    <form method="post" action="{% url 'posts:supplement_reply' supplement.id %}" class="supplement-reply-form">
                         {% csrf_token %}
                         {{ supplement_reply_form.content }}
                         <button type="submit">送信</button>
                     </form>
+
+                    {% if supplement.supplement_replies.count > 0 %}
+                    <button class="toggle-replies" data-count="{{ supplement.supplement_replies.count }}">
+                        {{ supplement.supplement_replies.count }}件の返信 ▼
+                    </button>
+                    {% endif %}
 
                     <div class="supplement-replies">
                         {% for supplement_reply in supplement.supplement_replies.all %}
@@ -154,7 +179,7 @@
 
                             {% if request.user == supplement_reply.user %}
                             <button 
-                                class="open-delete-modal" 
+                                class="open-delete-modal delete-btn" 
                                 data-url="{% url 'posts:supplement_reply_delete' supplement_reply.id %}"
                                 data-text="この返信を削除しますか？"
                                 data-content="{{ supplement_reply.content | truncatechars:30 }}"
@@ -185,13 +210,13 @@
         <div class="comment-list">
             {% for comment in comments %}
             <div class="comment-item">
-                <img src="{{ post.user.profile_image.url }}"
+                <img src="{{ comment.user.profile_image.url }}"
                     class="comment-user-icon"
                     alt="ユーザーアイコン">
 
                 <div class="comment-content">
                     <div class="comment-meta">
-                        <span class="comment-username">{{ post.user.username }}</span>
+                        <span class="comment-username">{{ comment.user.username }}</span>
                         <small>{{ comment.create_at }}</small>
                     </div>
 
@@ -206,7 +231,7 @@
 
                         {% if request.user == comment.user %}
                         <button  
-                            class="open-delete-modal" 
+                            class="open-delete-modal delete-btn" 
                             data-url="{% url 'posts:comment_delete' comment.id %}"
                             data-text="この補足説明を削除しますか？"
                             data-content="{{ comment.content | truncatechars:30 }}"
@@ -216,11 +241,17 @@
                         {% endif %}
                     </div>
 
-                    <form method="post" class="comment-reply-form">
+                    <form method="post" action="{% url 'posts:comment_reply' comment.id %}" class="comment-reply-form">
                         {% csrf_token %}
                         {{ comment_reply_form.content }}
                         <button type="submit">送信</button>
                     </form>
+
+                    {% if comment.comment_replies.count > 0 %}
+                    <button class="toggle-replies" data-count="{{ comment.comment_replies.count }}">
+                        {{ comment.comment_replies.count }}件の返信 ▼
+                    </button>
+                    {% endif %}
 
                     <div class="comment-replies">
                         {% for comment_reply in comment.comment_replies.all %}
@@ -246,7 +277,7 @@
 
                             {% if request.user == comment_reply.user %}
                             <button 
-                                class="open-delete-modal" 
+                                class="open-delete-modal delete-btn" 
                                 data-url="{% url 'posts:comment_reply_delete' comment_reply.id %}"
                                 data-text="この返信を削除しますか？"
                                 data-content="{{ comment_reply.content | truncatechars:30 }}"
@@ -266,6 +297,10 @@
     </div>
 
     <div class="side-content">
+
+        {% for post in related_posts %}
+            {% include "components/post_card.html" %}
+        {% endfor %}
 
     </div>
 
