@@ -1,0 +1,54 @@
+.title {
+  margin: 20px 10px;
+}
+
+.notification-container {
+  max-width: 600px;
+  margin: 30px auto;
+}
+
+.notification-item {
+  display: block;
+  padding: 14px 16px;
+  text-decoration: none;
+  color: inherit;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: white;
+
+  margin-bottom: 12px;
+  transition: 0.2s;
+}
+
+.notification-item:hover {
+  background-color: #f5f7fa;
+  transform: translateY(-1px);
+  color: inherit;
+}
+
+.notification-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fa-circle {
+  font-size: 10px;
+  color: #98FB98;
+}
+
+.icon {
+  font-size: 18px;
+}
+
+.text {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.notification-date {
+  margin-left: 28px; /* アイコン分ずらす */
+  font-size: 11px;
+  color: #888;
+}
