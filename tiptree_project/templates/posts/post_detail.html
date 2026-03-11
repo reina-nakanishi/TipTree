@@ -29,7 +29,7 @@
 
         <div class="post-header">
             <div class="post-user">
-                <img src="{{ post.user.profile_image.url }}" class="user-icon" alt="ユーザーアイコン">
+                <img src="{{ post.user.get_profile_image }}" class="user-icon" alt="ユーザーアイコン">
                 <span class="username">{{ post.user.username }}</span>
 
                 {% if request.user == post.user %}
@@ -112,7 +112,7 @@
         <div class="supplement-list">
             {% for supplement in supplements %}
             <div class="supplement-item">
-                <img src="{{ supplement.user.profile_image.url }}"
+                <img src="{{ supplement.get_profile_image.url }}"
                     class="supplement-user-icon"
                     alt="ユーザーアイコン">
 
@@ -158,7 +158,7 @@
                     <div class="supplement-replies">
                         {% for supplement_reply in supplement.supplement_replies.all %}
                         <div class="supplement-reply-item">
-                            <img src="{{ supplement_reply.user.profile_image.url }}"
+                            <img src="{{ supplement_reply.get_profile_image.url }}"
                                 class="reply-user-icon"
                                 alt="ユーザーアイコン">
 
@@ -210,7 +210,7 @@
         <div class="comment-list">
             {% for comment in comments %}
             <div class="comment-item">
-                <img src="{{ comment.user.profile_image.url }}"
+                <img src="{{ comment.get_profile_image.url }}"
                     class="comment-user-icon"
                     alt="ユーザーアイコン">
 
@@ -256,7 +256,7 @@
                     <div class="comment-replies">
                         {% for comment_reply in comment.comment_replies.all %}
                         <div class="comment-reply-item">
-                            <img src="{{ comment_reply.user.profile_image.url }}"
+                            <img src="{{ comment_reply.get_profile_image.url }}"
                                 class="reply-user-icon"
                                 alt="ユーザーアイコン">
 
