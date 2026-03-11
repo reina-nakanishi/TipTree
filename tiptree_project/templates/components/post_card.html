@@ -1,6 +1,6 @@
 <div class="postcard">
     <a href="{% url 'accounts:user_page' post.user.id %}" class="post-user">
-    <img src="{{ post.user.profile_image.url }}" class="user-icon" alt="ユーザーアイコン">
+    <img src="{{ post.user.get_profile_image }}" class="user-icon" alt="ユーザーアイコン">
     <span class="username">{{ post.user.username }}</span>
     </a>
 
