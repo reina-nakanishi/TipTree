@@ -16,7 +16,4 @@ class CategoryAdmin(admin.ModelAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def save_model(self, request, obj, form, change):
-        # 子カテゴリなのに親が未設定ならエラー
-        if obj.parent is None and Category.objects.filter(parent=obj).exists():
-            pass
         super().save_model(request, obj, form, change)
