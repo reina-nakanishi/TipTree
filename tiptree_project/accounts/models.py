@@ -3,6 +3,7 @@ from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser, PermissionsMixin
 )
 from django.core.validators import FileExtensionValidator
+from django.templatetags.static import static
 
 class UserManager(BaseUserManager):
     
@@ -32,9 +33,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=50,unique=True)
     profile_image = models.ImageField(
         upload_to='accounts/profile_images/',
-        default='static/images/default_profile.png',
         blank=True,null=True,
         validators=[FileExtensionValidator(['jpg','jpeg','png'],message="JPEGまたはPNG画像を選択してください")])
+    def get_profile_image(self):
+        if self.profile_image:
+            return self.profile_image.url
+        return static("images/default_profile.png")
     bio = models.TextField(default='',blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
