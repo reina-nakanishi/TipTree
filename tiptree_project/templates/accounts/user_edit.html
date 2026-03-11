@@ -9,7 +9,7 @@
 <form method="POST" enctype="multipart/form-data" class="user-edit-form" novalidate>
 {% csrf_token %}
 <div class="image-preview">
-    <img id="preview-image" src="{{ user.profile_image.url }}" alt="現在のプロフィール画像" class="user-icon">    
+    <img id="preview-image" src="{{ user.get_profile_image }}" alt="現在のプロフィール画像" class="user-icon">    
 </div>
 <input type="file" name="profile_image" id="id_image" accept="image/*" class="profile-image">
 
