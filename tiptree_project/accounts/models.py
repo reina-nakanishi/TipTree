@@ -32,7 +32,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=50,unique=True)
     profile_image = models.ImageField(
         upload_to='accounts/profile_images/',
-        default='accounts/profile_images/default_profile.png',
+        default='static/images/default_profile.png',
         blank=True,null=True,
         validators=[FileExtensionValidator(['jpg','jpeg','png'],message="JPEGまたはPNG画像を選択してください")])
     bio = models.TextField(default='',blank=True)
