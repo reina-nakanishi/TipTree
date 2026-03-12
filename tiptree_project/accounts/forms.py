@@ -119,6 +119,7 @@ class PasswordChangeForm(forms.ModelForm):
             raise ValidationError('元のパスワードが違います')
         if new_password1 != new_password2:
             raise ValidationError('新しいパスワードが一致しません')
+        return cleaned_data
         
     def save(self, commit=False):
         user = super().save(commit=False)
