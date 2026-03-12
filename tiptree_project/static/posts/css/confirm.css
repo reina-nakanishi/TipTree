@@ -75,7 +75,7 @@ table {
   background: #90EE90;
 }
 
-.post-table img {
+img {
   width: 200px;
   border-radius: 10px;
   display: block;
@@ -84,7 +84,7 @@ table {
   max-width: none;
 }
 
-.post-table video {
+video {
   width: 250px;
   border-radius: 10px;
   display: block;
