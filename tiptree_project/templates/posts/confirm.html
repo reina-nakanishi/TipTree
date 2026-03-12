@@ -26,7 +26,7 @@
                 <td>サムネイル画像</td>
                 <td>
                     {% if post.thumbnail %}
-                        <img src="{{ post.thumbnail.url }}" alt="{{ post.title }}のサムネイル">
+                        <img class="preview-thumb" src="{{ post.thumbnail.url }}" alt="{{ post.title }}のサムネイル">
                     {% endif %}
                 </td>
             </tr>
@@ -35,7 +35,7 @@
                 <td>動画</td>
                 <td>
                     {% if post.video %}
-                        <video src="{{ post.video.url }}" controls></video>
+                        <video class="preview-video" src="{{ post.video.url }}" controls></video>
                     {% endif %}
                 </td>
             </tr>
