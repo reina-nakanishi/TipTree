@@ -38,10 +38,14 @@
       編集
     </a>
     {% endif %}
-    <form action="{% url 'accounts:logout' %}" method="post">
-        {% csrf_token %}
-        <button type="submit" class="logout-btn">ログアウト</button>
-    </form>
+        <button
+         class="delete-btn logout-btn"
+         data-url="{% url 'accounts:logout' %}"
+         data-type="logout"
+         data-title=""
+        >
+          ログアウト
+        </button>
   </div>
 
 </div>
