@@ -15,7 +15,7 @@ class CreatePostForm(forms.ModelForm):
     )
     category = forms.ModelChoiceField(
         queryset=Category.objects.none(),
-        required=True,
+        required=False,
         widget=forms.Select(attrs={"id": "child-category"}),
         label="サブカテゴリ"
     )
@@ -56,6 +56,14 @@ class CreatePostForm(forms.ModelForm):
     def __init__(self, *args, validate_file=True, **kwargs):
         super().__init__(*args, **kwargs)
         self.validate_file = validate_file
+        
+        self.fields['thumbnail'].widget.attrs.update({
+            'id': 'thumbnailInput'
+        })
+
+        self.fields['video'].widget.attrs.update({
+            'id': 'videoInput'
+        })
         
         if not validate_file:
             self.fields['thumbnail'].required = False
@@ -113,7 +121,7 @@ class CreatePostForm(forms.ModelForm):
             return video
         
         if not video:
-            raise ValidationError('動画ファイルを選択してください。')
+            return video
         
         valid_extentions = ['mp4','mov','avi']
         if not any(video.name.lower().endswith(ext) for ext in valid_extentions):
@@ -129,6 +137,9 @@ class CreatePostForm(forms.ModelForm):
     
     def clean_thumbnail(self):
         thumbnail = self.cleaned_data.get('thumbnail')
+        
+        if not thumbnail:
+            return thumbnail
         
         valid_extentions = ['jpg','jpeg','png']
         if not self.validate_file:
