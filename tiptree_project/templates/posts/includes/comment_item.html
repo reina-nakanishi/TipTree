@@ -1,0 +1,52 @@
+<div class="comment-item">
+    <img src="{{ comment.user.get_profile_image }}"
+        class="comment-user-icon"
+        alt="ユーザーアイコン">
+
+    <div class="comment-content">
+        <div class="comment-meta">
+            <span class="comment-username">{{ comment.user.username }}</span>
+            <small>{{ comment.create_at }}</small>
+        </div>
+
+        <p class="comment-text">
+            {{ comment.content }}
+        </p>
+
+        <div class="comment-actions">
+            <button class="reply-btn" data-id="{{ comment.id }}">
+                返信
+            </button>
+
+            {% if request.user == comment.user %}
+            <button  
+                class="delete-btn"
+                data-url="{% url 'posts:comment_delete' comment.id %}"
+                data-title="{{ comment.content }}"
+                data-type="comment"
+            >
+                削除
+            </button>
+            {% endif %}
+
+        </div>
+
+        <form method="post" action="{% url 'posts:comment_reply' comment.id %}" class="comment-reply-form">
+            {% csrf_token %}
+            {{ comment_reply_form.content }}
+            <button type="submit">送信</button>
+        </form>
+
+        {% if comment.comment_replies.count > 0 %}
+            <button class="toggle-replies" data-count="{{ comment.comment_replies.count }}">
+                {{ comment.comment_replies.count }}件の返信 ▼
+            </button>
+        {% endif %}
+
+        <div class="comment-replies">
+            {% for comment_reply in comment.comment_replies.all %}
+                {% include "posts/includes/comment_reply_item.html" %}
+            {% endfor %}
+        </div>
+    </div>
+</div>

@@ -1,0 +1,31 @@
+<div class="comment-reply-item">
+    <img src="{{ comment_reply.user.get_profile_image }}"
+        class="reply-user-icon"
+        alt="ユーザーアイコン">
+
+    <div class="reply-body">
+        <div class="reply-meta">
+            <span class="reply-username">
+                {{ comment_reply.user.username }}
+            </span>
+            <small class="reply-date">
+                {{ comment_reply.create_at }}
+            </small>
+        </div>
+
+        <p class="comment-reply-text">
+            {{ comment_reply.content }}
+        </p>
+
+        {% if request.user == comment_reply.user %}
+        <button 
+            class="delete-btn"
+            data-url="{% url 'posts:comment_reply_delete' comment_reply.id %}"
+            data-title="{{ comment_reply.content }}"
+            data-type="comment_reply"
+        >
+            削除
+        </button>
+        {% endif %}
+    </div>
+</div>

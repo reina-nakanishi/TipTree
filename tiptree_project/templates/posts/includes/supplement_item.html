@@ -1,0 +1,52 @@
+<div class="supplement-item">
+    <img src="{{ supplement.user.get_profile_image }}"
+        class="supplement-user-icon"
+        alt="ユーザーアイコン">
+
+    <div class="supplement-content">
+        <div class="supplement-meta">
+            <span class="supplementusername">{{ supplement.user.username }}</span>
+            <small>{{ supplement.create_at }}</small>
+        </div>
+
+        <p class="supplement-text">
+            {{ supplement.content }}
+        </p>
+
+        <div class="supplement-actions">
+            <button class="reply-btn" data-id="{{ supplement.id }}">
+                返信
+            </button>
+
+            {% if request.user == supplement.user %}
+            <button  
+                class="delete-btn"
+                data-url="{% url 'posts:supplement_delete' supplement.id %}"
+                data-title="{{ supplement.content }}"
+                data-type="supplement"
+            >
+                削除
+            </button>
+            {% endif %}
+
+        </div>
+
+        <form method="post" action="{% url 'posts:supplement_reply' supplement.id %}" class="supplement-reply-form">
+            {% csrf_token %}
+            {{ supplement_reply_form.content }}
+            <button type="submit">送信</button>
+        </form>
+
+        {% if supplement.supplement_replies.count > 0 %}
+            <button class="toggle-replies" data-count="{{ supplement.supplement_replies.count }}">
+                {{ supplement.supplement_replies.count }}件の返信 ▼
+            </button>
+        {% endif %}
+
+        <div class="supplement-replies">
+            {% for supplement_reply in supplement.supplement_replies.all %}
+                {% include "posts/includes/supplement_reply_item.html" %}
+            {% endfor %}
+        </div>
+    </div>
+</div>

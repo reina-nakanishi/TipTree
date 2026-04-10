@@ -1,0 +1,31 @@
+<div class="supplement-reply-item">
+    <img src="{{ supplement_reply.user.get_profile_image }}"
+        class="reply-user-icon"
+        alt="ユーザーアイコン">
+
+    <div class="reply-body">
+        <div class="reply-meta">
+            <span class="reply-username">
+                {{ supplement_reply.user.username }}
+            </span>
+            <small class="reply-date">
+                {{ supplement_reply.create_at }}
+            </small>
+        </div>
+
+        <p class="supplement-reply-text">
+            {{ supplement_reply.content }}
+        </p>
+
+        {% if request.user == supplement_reply.user %}
+        <button 
+            class="delete-btn"
+            data-url="{% url 'posts:supplement_reply_delete' supplement_reply.id %}"
+            data-title="{{ supplement_reply.content }}"
+            data-type="supplement_reply"
+        >
+            削除
+        </button>
+        {% endif %}
+    </div>
+</div>
