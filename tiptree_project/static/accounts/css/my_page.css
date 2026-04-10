@@ -2,12 +2,24 @@
     width: 100px;
     height: 100px;
     border-radius: 50%;
+    object-fit: cover;
+    object-position: center;
     display: block;
     margin: 0 auto;
   }
 
 .profile-table {
-    margin: 10px auto;
+    margin: 20px auto;
+}
+
+.profile-table td:last-child {
+  max-width: 200px;
+  word-break: break-word;
+  line-height: 1.6;
+}
+
+.profile-table tr + tr td {
+  padding-top: 12px;
 }
 
 .profile-table .label {
@@ -30,7 +42,7 @@
 .my-action {
   display: flex;
   justify-content: center;
-  gap: 20px; 
+  gap: 40px; 
 }
 
 .my-action a {
@@ -41,21 +53,23 @@
   display: flex;
   justify-content: center;  /* 横中央 */
   align-items: center;      /* 縦中央 */
-  gap: 12px;                /* ボタン同士の間隔 */
-  margin-top: 20px;
+  gap: 40px;                /* ボタン同士の間隔 */
+  margin: 40px;
 }
 
 .btn {
   padding: 8px 16px;
-  background: #f2f2f2;
+  background: #e0e0e0;
   border-radius: 20px;
   font-size: 14px;
   white-space: nowrap;
   transition: 0.2s;
+  text-decoration: none;
+  color: inherit;
 }
 
 .btn:hover {
-  background: #e5e5e5;
+  background: #cfcfcf;
 }
 
 .logout-btn {
