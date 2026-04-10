@@ -16,6 +16,11 @@
         {% include "components/post_card.html" %}
       {% endfor %}
     </div>
+  {% else %}
+    <p class="message">
+      まだ「あとで見る」投稿はありません<br>
+      気になる投稿を追加してみよう！
+    </p>
   {% endif %}
 
   {% include "components/pagination.html" %}
