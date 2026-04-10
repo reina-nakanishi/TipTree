@@ -10,34 +10,66 @@ from django.core.paginator import Paginator
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.core.files import File
+from django.conf import settings
 import logging
 logger = logging.getLogger(__name__)
 
 
 @login_required
 def create_post(request):
+    temp_files = request.session.get('temp_post_files', {})
+
+    is_back = 'back_form_data' in request.session
 
     if 'back_form_data' in request.session:
-        create_post_form = forms.CreatePostForm(request.session.pop('back_form_data'))
+        form_data = request.session.pop('back_form_data')
+        create_post_form = forms.CreatePostForm(form_data)
+
         return render(request, "posts/create_post.html", {
-            "create_post_form": create_post_form
+            "create_post_form": create_post_form,
+            "temp_files": temp_files,
+            "MEDIA_URL": settings.MEDIA_URL
         })
     
-    
     create_post_form = forms.CreatePostForm(request.POST or None, request.FILES or None)
+    
+    
+    if request.method == "POST":
+
+        # required外す
+        if temp_files.get('thumbnail'):
+            create_post_form.fields['thumbnail'].required = False
+
+        if temp_files.get('video'):
+            create_post_form.fields['video'].required = False
+
 
     if create_post_form.is_valid():
+
         # モデルインスタンスを作る（DBには保存しない）
         post = create_post_form.save(commit=False)
         post.user = request.user
+        
+        if not post.category_id:
+            post.category = create_post_form.cleaned_data.get('parent_category')
 
         # --- 一時保存処理（thumbnail と video を MEDIA_ROOT/tmp/ に保存） ---
         tmp_folder = 'tmp'
         thumb = create_post_form.cleaned_data.get('thumbnail')
         video = create_post_form.cleaned_data.get('video')
 
-        temp_paths = {} #一時保存ファイルの管理表　削除、参照する際に用いる
-        if thumb:
+        temp_paths = temp_files.copy() #一時保存ファイルの管理表　削除、参照する際に用いる
+        
+        if not create_post_form.cleaned_data.get('thumbnail') and temp_files.get('thumbnail'):
+            post.thumbnail.name = temp_files['thumbnail']
+
+        if not create_post_form.cleaned_data.get('video') and temp_files.get('video'):
+            post.video.name = temp_files['video']
+        
+        if thumb and hasattr(thumb, 'name'):
+            if temp_files.get('thumbnail'):
+                default_storage.delete(temp_files['thumbnail'])
+            
             ext = os.path.splitext(thumb.name)[1]
             tmp_name = f'{tmp_folder}/{uuid.uuid4().hex}{ext}'
 
@@ -48,10 +80,16 @@ def create_post(request):
             saved_path = default_storage.save(tmp_name, content)
             post.thumbnail.name = saved_path
             temp_paths['thumbnail'] = saved_path
+        
+        elif temp_files.get('thumbnail'):
+            temp_paths['thumbnail'] = temp_files['thumbnail']
             
             #ext=extension(拡張子),os.path.splitext:ファイル名を名前[0],拡張子[1]に分解する関数
 
-        if video:
+        if video and hasattr(video, 'name'):
+            if temp_files.get('video'):
+                default_storage.delete(temp_files['video'])
+            
             ext = os.path.splitext(video.name)[1]
             tmp_name = f'{tmp_folder}/{uuid.uuid4().hex}{ext}'
 
@@ -62,6 +100,9 @@ def create_post(request):
             saved_path = default_storage.save(tmp_name, content)
             post.video.name = saved_path
             temp_paths['video'] = saved_path
+            
+        elif temp_files.get('video'):
+            temp_paths['video'] = temp_files['video']
 
         # 保存した一時パスをセッションに入れておく（confirmで参照 / backで削除に使える）
         request.session['temp_post_files'] = temp_paths
@@ -69,13 +110,21 @@ def create_post(request):
         return render(
             request,
             'posts/confirm.html',
-            context={'create_post_form': create_post_form, 'post': post}
+            context={
+                'create_post_form': create_post_form, 
+                'post': post,
+                'MEDIA_URL': settings.MEDIA_URL
+            }
         )
+
 
     return render(
         request,
         'posts/create_post.html',
-        context={'create_post_form': create_post_form}
+        context={
+            'create_post_form': create_post_form,
+            'MEDIA_URL': settings.MEDIA_URL,
+        }
     )
     
 
@@ -102,18 +151,22 @@ def confirm(request):
 
     if action == 'back':
         # 戻るときは一時ファイルを削除してフォームに戻す
-        for p in temp_paths.values():
-            try:
-                default_storage.delete(p)
-            except Exception as e:
-                logger.warning(f"Temp file delete failed: {p} ({e})")
-        request.session.pop('temp_post_files', None)  #temp_post_filesがあれば削除
+        # for p in temp_paths.values():
+        #     try:
+        #         default_storage.delete(p)
+        #     except Exception as e:
+        #         logger.warning(f"Temp file delete failed: {p} ({e})")
+        #request.session.pop('temp_post_files', None)  #temp_post_filesがあれば削除
         request.session['back_form_data'] = request.POST
         return redirect('posts:create_post')
 
     elif action == 'done':
         post = create_post_form.save(commit=False)
         post.user = request.user
+
+        category = create_post_form.cleaned_data.get('category')
+        parent = create_post_form.cleaned_data.get('parent_category')
+        post.category = category if category else parent
 
         for field_name, temp_path in temp_paths.items():
 
@@ -139,7 +192,7 @@ def confirm(request):
 
     # それ以外（バリデーションNGなど）
     return render(request, "posts/confirm.html", context={
-        'create_post_form': create_post_form
+        'create_post_form': create_post_form,
     })
     
 
@@ -154,7 +207,8 @@ def edit_post(request, post_id):
         return redirect('accounts:my_page')
     
     return render(request,'posts/edit_post.html',context={
-        'edit_post_form':edit_post_form
+        'edit_post_form':edit_post_form,
+        'post':post
     })
 
 @login_required
@@ -307,6 +361,25 @@ def comment_create(request, post_id):
                     post=comment.post,
                     comment=comment,
                 )
+                
+            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                html = render(
+                    request,
+                    "posts/includes/comment_item.html",  
+                    {"comment": comment}
+                ).content.decode("utf-8")
+
+                return JsonResponse({
+                    "success": True,
+                    "html": html
+                })
+
+        # バリデーションエラー時
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return JsonResponse({
+                "success": False,
+                "error": "コメントの送信に失敗しました"
+            })
 
     return redirect('posts:post_detail', post_id=post.id)
 
@@ -342,6 +415,25 @@ def comment_reply(request, comment_id):
                     post=comment_reply.comment.post,
                     comment=comment_reply.comment,
                 )
+                
+            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                html = render(
+                    request,
+                    "posts/includes/comment_reply_item.html",
+                    {"comment_reply": comment_reply}
+                ).content.decode("utf-8")
+
+                return JsonResponse({
+                    "success": True,
+                    "html": html,
+                    "comment_id": comment.id
+                })
+
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return JsonResponse({
+                "success": False,
+                "error": "返信に失敗しました"
+            })
             
     return redirect('posts:post_detail', post_id=comment.post.id)
 
@@ -375,6 +467,25 @@ def supplement_create(request, post_id):
                     post=supplement.post,
                     supplement=supplement,
                 )
+                
+            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                html = render(
+                    request,
+                    "posts/includes/supplement_item.html",  
+                    {"supplement": supplement}
+                ).content.decode("utf-8")
+
+                return JsonResponse({
+                    "success": True,
+                    "html": html
+                })
+
+        # バリデーションエラー時
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return JsonResponse({
+                "success": False,
+                "error": "補足説明の送信に失敗しました"
+            })
 
     return redirect('posts:post_detail', post_id=post.id)
 
@@ -410,6 +521,25 @@ def supplement_reply(request, supplement_id):
                     post=supplement_reply.supplement.post,
                     supplement=supplement_reply.supplement,
                 )
+                
+            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                html = render(
+                    request,
+                    "posts/includes/supplement_reply_item.html",
+                    {"supplement_reply": supplement_reply}
+                ).content.decode("utf-8")
+
+                return JsonResponse({
+                    "success": True,
+                    "html": html,
+                    "supplement_id": supplement.id
+                })
+
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return JsonResponse({
+                "success": False,
+                "error": "返信に失敗しました"
+            })
 
     return redirect('posts:post_detail', post_id=supplement.post.id)
 
