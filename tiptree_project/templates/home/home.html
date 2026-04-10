@@ -39,6 +39,14 @@
 <div class="post-grid">
   {% for post in posts %}
     {% include "components/post_card.html" %}
+  {% empty %}
+    {% if selected_child %}
+      <p class="message">このカテゴリーの投稿はまだありません。1番に投稿しよう！</p>
+    {% elif selected_parent %}
+      <p class="message">このカテゴリーの投稿はまだありません。1番に投稿しよう！</p>
+    {% else %}
+      <p class="message">投稿はまだありません。1番に投稿しよう！</p>
+    {% endif %}
   {% endfor %}
 </div>
 {% if page_obj.paginator.num_pages > 1 %}
