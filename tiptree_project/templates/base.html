@@ -45,14 +45,31 @@
                         <a href="{% url 'posts:create_post' %}" class="menu-item" ><i class="far fa-plus-square"></i><span class="menu-text">投稿</span></a>
                     {% else %}
                         <a href="{% url 'posts:ranking' %}" class="menu-item" ><i class="fas fa-trophy"></i><span class="menu-text">ランキング</span></a>
-                        <a href="{% url 'accounts:login' %}" class="menu-item" ><i class="far fa-user-circle"></i><span class="menu-text">マイページ</span></a>
-                        <a href="{% url 'accounts:login' %}" class="menu-item" ><i class="far fa-plus-square"></i><span class="menu-text">投稿</span></a>
+                        <a href="{% url 'accounts:login' %}" class="menu-item login" data-type="auth" data-url="{% url 'accounts:login' %}"><i class="far fa-user-circle"></i><span class="menu-text">マイページ</span></a>
+                        <a href="{% url 'accounts:login' %}" class="menu-item login" data-type="auth" data-url="{% url 'accounts:login' %}"><i class="far fa-plus-square"></i><span class="menu-text">投稿</span></a>
                     {% endif %}
                 </nav>
             </div>
         </header>
         <script src="{% static 'base.js' %}"></script>
         {% block content %}{% endblock %}
+
+        
+        <div id="common-modal" class="modal hidden">
+            <div class="modal-content">
+
+                <button class="close-btn" type="button" onclick="closeModal()">×</button>
+
+                <p id="modal-message" class="modal-text"></p>
+
+                <form id="modal-form" method="POST">
+                {% csrf_token %}
+                <div id="modal-actions"></div>
+                </form>
+
+            </div>
+        </div>
+
         {% block extra_js %}{% endblock %}
     </body>
 </html>
