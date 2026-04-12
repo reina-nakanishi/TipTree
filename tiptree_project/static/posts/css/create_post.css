@@ -41,6 +41,10 @@
     max-width: 500px;
 }
 
+.help-text {
+    font-size: 12px;
+}
+
 .error-message {
     color: red;
 }
@@ -80,20 +84,44 @@
   margin: 10px 0 5px;
 }
 
-.preview-img {
-  width: 200px;
+.preview-img,
+#thumbnailPreview {
+  width: 100%;
+  max-width: 320px;   
+  aspect-ratio: 16 / 9;
+  object-fit: cover;  
   border-radius: 10px;
-  display: block;
-  margin-bottom: 10px;
-  flex-shrink: 0;
-  max-width: none;
+  display: none;     
 }
 
-.preview-video {
+#thumbnailPreview {
+    display: none;
+}
+
+.preview-video,
+#videoPreview {
   width: 250px;
   border-radius: 10px;
-  display: block;
-  margin-bottom: 10px;
-  flex-shrink: 0;
-  max-width: none;
+  display: none;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+#videoPreview {
+    display: none;
+}
+
+.current-thumbnail {
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.current-video {
+  width: 250px;
+  border-radius: 10px;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
 }
