@@ -11,7 +11,26 @@
     {% for notification in notifications %}
     {% include "notifications/notification_card.html" %}
     {% empty %}
-    <p>通知はありません</p>
+    <div class="empty-notifications">
+        <p class="empty-title">まだ通知はありません</p>
+        <p class="empty-subtitle">
+            あなたへのリアクションがあると、ここに通知が届きます
+        </p>
+
+        <div class="notification-item sample">
+            <div class="notification-main">
+                <span class="icon">
+                    <i class="fa-regular fa-comment-dots"></i>
+                </span>
+                <span class="text">
+                    ○○さんが投稿aにコメントしました
+                </span>
+            </div>
+            <div class="notification-date">
+                2026/04/12 15:00
+            </div>
+        </div>
+    </div>
     {% endfor %}
 
 {% endblock %}
