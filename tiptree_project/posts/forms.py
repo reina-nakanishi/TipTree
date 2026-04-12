@@ -20,19 +20,23 @@ class CreatePostForm(forms.ModelForm):
         label="サブカテゴリ"
     )
     
+    description = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={"rows": 4}),
+        label="補足説明"
+    )
+    
     class Meta:
         model = Post
-        fields = ('title','parent_category','category','thumbnail','video','content','description')
+        fields = ('title','parent_category','category','thumbnail','video','content')
         labels = {
             'title':'タイトル',
             'thumbnail':'サムネイル画像',
             'video':'動画',
             'content':'本文',
-            'description':'補足説明'
         }
         widgets = {
             "content": forms.Textarea(attrs={"rows": 10}),
-            "description": forms.Textarea(attrs={"rows": 4}),
         }
         error_messages ={
             'title':{
@@ -160,18 +164,16 @@ class EditPostForm(forms.ModelForm):
     
     class Meta:
         model = Post
-        fields = ('title','parent_category','category','thumbnail','video','content','description')
+        fields = ('title','parent_category','category','thumbnail','video','content')
         labels = {
             'title':'タイトル',
             'category':'サブカテゴリ',
             'thumbnail':'サムネイル画像',
             'video':'動画',
             'content':'本文',
-            'description':'補足説明'
         }
         widgets = {
             "content": forms.Textarea(attrs={"rows": 10}),
-            "description": forms.Textarea(attrs={"rows": 4}),
             "thumbnail": forms.FileInput(),
             "video": forms.FileInput(),
         }
@@ -196,9 +198,46 @@ class EditPostForm(forms.ModelForm):
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+            
+        self.fields['parent_category'].widget.attrs.update({
+            'id': 'parent-category'
+        })
 
-        if self.instance and self.instance.category:
-            self.fields["parent_category"].initial = self.instance.category.parent
+        self.fields['category'].widget.attrs.update({
+            'id': 'child-category'
+        })
+            
+        self.fields['thumbnail'].widget.attrs.update({
+            'id': 'thumbnailInput'
+        })
+
+        self.fields['video'].widget.attrs.update({
+            'id': 'videoInput'
+        })
+        
+        if 'parent_category' in self.data:
+            try:
+                parent_id = int(self.data.get('parent_category'))
+                self.fields['category'].queryset = Category.objects.filter(
+                    parent_id=parent_id
+                )
+            except (ValueError, TypeError):
+                pass
+
+        elif self.instance and self.instance.pk:
+
+            if self.instance.category.parent:
+                # 子カテゴリ付き投稿
+                self.fields['category'].queryset = Category.objects.filter(
+                    parent=self.instance.category.parent
+                )
+                self.initial['parent_category'] = self.instance.category.parent
+
+            else:
+                # 親のみ投稿
+                self.fields['category'].queryset = Category.objects.filter(parent=self.instance.category)
+                self.initial['parent_category'] = self.instance.category
+                self.initial['category'] = None
 
 
 class CommentForm(forms.ModelForm):
