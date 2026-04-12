@@ -19,7 +19,7 @@
 
             <tr>
                 <td>サブカテゴリー</td>
-                <td>{{ create_post_form.cleaned_data.category }}</td>
+                <td>{{ create_post_form.cleaned_data.category | default:"未選択" }}</td>
             </tr>
 
             <tr>
