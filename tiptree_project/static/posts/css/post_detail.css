@@ -24,6 +24,7 @@
     display: flex;
     align-items: center;
     padding: 8px;
+    justify-content: space-between;
   }
 
   .post-user{
@@ -32,10 +33,22 @@
     gap: 12px;
   }
 
-  .edit-btn,
-  .post-delete {
+  button.reply-btn,
+  .edit-btn{
     padding: 8px 16px;
-    background: #f2f2f2;
+    background: #e0e0e0;
+    border-radius: 20px;
+    font-size: 14px;
+    white-space: nowrap;
+    transition: 0.2s;
+    font-weight: 500;
+  
+    border: none;
+  }
+
+  .delete-btn {
+    padding: 8px 16px;
+    background: #F08080;
     border-radius: 20px;
     font-size: 14px;
     white-space: nowrap;
@@ -51,27 +64,47 @@
     text-decoration: none;
   }
 
-  .edit-btn:hover,
-  .post-delete:hover {
-      background: #e5e5e5;
+  button.reply-btn:hover,
+  .edit-btn:hover {
+      background: #cfcfcf;
+  }
+
+  .delete-btn:hover {
+      background: #CD5C5C;
   }
 
   .user-icon {
     width: 50px;
     height: 50px;
     border-radius: 50%;
+    object-fit: cover;
+    object-position: center;
     margin-right: 15px;
   }
 
-  .maincontent .post-stats {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-left: auto;
-    font-size: 28px;
-    color: #555;
-    flex-shrink: 0;
-  }
+.maincontent .post-stats {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  font-size: 28px;
+  color: #555;
+}
+
+.comment-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #888;       /* 押せなさそう感 */
+  cursor: default;
+  font-size: 25px;
+  margin-left: 8px;
+}
+
+.action-group {
+  display: flex;
+  align-items: center;
+  gap: 20px;  /* ← ボタン同士の間隔 */
+}
 
   .post-stats .help-btn,
   .post-stats .save-btn {
@@ -169,6 +202,8 @@
     height: 48px;
     border-radius: 50%;
     object-fit: cover;
+    object-position: center;
+    object-fit: cover;
     flex-shrink: 0; /* 縮まない */
   }
   .supplement-content,
@@ -206,7 +241,6 @@
     margin-top: 4px;
   }
 
-  .delete-btn,
   .reply-btn {
     padding: 8px 16px;
     background: none;
@@ -219,7 +253,7 @@
     border: none;
   }
 
-  .delete-btn:hover,
+  
   .reply-btn:hover {
     background: #f2f2f2;
   }
@@ -248,6 +282,8 @@
     height: 38px;
     border-radius: 50%;
     object-fit: cover;
+    object-position: center;
+    object-fit: cover;
     flex-shrink: 0;
   }
 
@@ -258,48 +294,6 @@
     cursor: pointer;
     padding: 4px 0;
     font-size: 14px;
-  }
-
-  #delete-modal {
-    position: fixed;  /*画面固定　スクロールしても動かない*/
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-  }
-
-  #delete-modal.hidden {
-    display: none;
-  }
-
-  .modal-content {
-    background: #fff;
-    padding: 24px;
-    border-radius: 12px;
-    width: 320px;
-    text-align: center;
-    position: relative;
-  }
-
-  .close-btn {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    border: none;
-    background: none;
-    font-size: 20px;
-    cursor: pointer;
-  }
-
-  .confirm-delete {
-    background: #e53935;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 6px;
-    cursor: pointer;
   }
 
   .side-content {
