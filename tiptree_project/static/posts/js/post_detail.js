@@ -2,47 +2,48 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const modal = document.getElementById("delete-modal");
   const form = document.getElementById("delete-form");
-  const text = modal.querySelector(".modal-text");
-  const subText = modal.querySelector(".modal-subtext");
-  const closeBtn = modal.querySelector(".close-btn");
 
-  document.querySelectorAll(".open-delete-modal").forEach(btn => {
-    btn.addEventListener("click", () => {
-      openDeleteModal(btn);
+  if (modal && form) {
+
+    const modalText = modal.querySelector(".modal-text");
+    const subText = modal.querySelector(".modal-subtext");
+    const closeBtn = modal.querySelector(".close-btn");
+
+    document.addEventListener("click", (e) => {
+
+      const btn = e.target.closest(".open-delete-modal, .delete-btn");
+
+      if (!btn) return;
+
+      const modal = document.getElementById("delete-modal");
+      const form = document.getElementById("delete-form");
+
+      if (!modal || !form) return;
+
+      const modalText = modal.querySelector(".modal-text");
+      const subText = modal.querySelector(".modal-subtext");
+
+      form.action = btn.dataset.url;
+
+      modalText.textContent =
+        btn.dataset.text || "本当に削除しますか？";
+
+      if (btn.dataset.content) {
+        subText.textContent = btn.dataset.content;
+        subText.style.display = "block";
+      } else {
+        subText.style.display = "none";
+      }
+
+      modal.classList.remove("hidden");
     });
-  });
 
-  closeBtn.addEventListener("click", closeDeleteModal);
-
-  function openDeleteModal(btn) {
-    // 削除先URL
-    form.action = btn.dataset.url;
-
-    // メイン文言
-    text.textContent =
-      btn.dataset.text || "本当に削除しますか？";
-
-    // 補足内容（本文）
-    if (btn.dataset.content) {
-      subText.textContent = btn.dataset.content;
-      subText.style.display = "block";
-    } else {
-      subText.textContent = "";
-      subText.style.display = "none";
-    }
-
-    modal.classList.remove("hidden");
+      function closeDeleteModal() {
+        modal.classList.add("hidden");
+        form.action = ""; // 念のためリセット
+      }
   }
 
-  function closeDeleteModal() {
-    modal.classList.add("hidden");
-    form.action = ""; // 念のためリセット
-  }
-
-});
-
-
-document.addEventListener("DOMContentLoaded", () => {
   const text = document.getElementById("post-text");
   const btn = document.getElementById("toggle-btn");
 
@@ -60,49 +61,132 @@ document.addEventListener("DOMContentLoaded", () => {
       btn.textContent = "閉じる";
     }
   });
-});
 
-document.addEventListener("input", function (e) {
-  if (e.target.classList.contains("auto-resize")) {
-    e.target.style.height = "auto";
-    e.target.style.height = e.target.scrollHeight + "px";
-  }
-});
+  document.addEventListener("input", function (e) {
+    if (e.target.classList.contains("auto-resize")) {
+      e.target.style.height = "auto";
+      e.target.style.height = e.target.scrollHeight + "px";
+    }
+  });
 
-document.querySelectorAll(".reply-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
+  document.addEventListener("click", (e) => {
 
-    const container = btn.closest(".supplement-content, .comment-content");
+    const btn = e.target.closest(".reply-btn");
+    if (!btn) return;
+
+    const container = btn.closest(".comment-content, .supplement-content");
     if (!container) return;
 
     const form = container.querySelector(
-      ".supplement-reply-form, .comment-reply-form"
+      ".comment-reply-form, .supplement-reply-form"
     );
     if (!form) return;
 
     form.classList.toggle("is-open");
   });
-});
 
-document.querySelectorAll(".toggle-replies").forEach(button => {
+  document.querySelectorAll(".toggle-replies").forEach(button => {
 
-  button.addEventListener("click", () => {
+    button.addEventListener("click", () => {
 
-    const item = button.closest(".comment-item, .supplement-item");
-    const replies = item.querySelector(".comment-replies, .supplement-replies");
-    const count = button.dataset.count;
+      const item = button.closest(".comment-item, .supplement-item");
+      const replies = item.querySelector(".comment-replies, .supplement-replies");
+      const count = button.dataset.count;
 
-    if (replies.style.display === "block") {
+      if (replies.style.display === "block") {
 
-      replies.style.display = "none";
-      button.textContent = `${count}件の返信を表示 ▼`;
+        replies.style.display = "none";
+        button.textContent = `${count}件の返信を表示 ▼`;
 
-    } else {
+      } else {
 
-      replies.style.display = "block";
-      button.textContent = `返信を非表示 ▲`;
+        replies.style.display = "block";
+        button.textContent = `返信を非表示 ▲`;
 
+      }
+
+    });
+
+  });
+
+  // 対象のフォームクラスを全部まとめる
+  document.addEventListener("submit", (e) => {
+
+    const form = e.target;
+
+    // 対象フォームだけ処理
+    if (!form.matches(".supplement-form, .supplement-reply-form, .comment-form, .comment-reply-form")) {
+      return;
     }
+
+    e.preventDefault();
+
+    // 🔥 送信中チェック（ここが最重要）
+    if (form.dataset.submitting === "true") {
+      return;
+    }
+
+    form.dataset.submitting = "true";
+
+    const submitBtn = form.querySelector("button[type='submit']");
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = "送信中...";
+    }
+
+    const formData = new FormData(form);
+
+    fetch(form.action, {
+      method: "POST",
+      body: formData,
+      headers: {
+        "X-Requested-With": "XMLHttpRequest"
+      },
+    })
+    .then(response => response.json())
+    .then(data => {
+
+      console.log(data);
+
+      if (data.success) {
+        form.reset();
+
+        let container;
+
+        if (form.classList.contains("supplement-form")) {
+          container = document.querySelector(".supplement-list");
+
+        } else if (form.classList.contains("comment-form")) {
+          container = document.querySelector(".comment-list");
+
+        } else if (form.classList.contains("supplement-reply-form")) {
+          container = form.closest(".supplement-content")
+                          .querySelector(".supplement-replies");
+
+        } else if (form.classList.contains("comment-reply-form")) {
+          container = form.closest(".comment-content")
+                          .querySelector(".comment-replies");
+        }
+
+        if (container && data.html) {
+          container.insertAdjacentHTML("afterbegin", data.html);
+          container.style.display = "block";
+        }
+
+      } else {
+        alert(data.error || "送信に失敗しました");
+      }
+
+    })
+    .catch(() => alert("通信エラーです"))
+    .finally(() => {
+      form.dataset.submitting = "false";
+
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "送信";
+      }
+    });
 
   });
 
