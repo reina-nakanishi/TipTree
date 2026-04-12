@@ -8,30 +8,58 @@
 <body>
     <form method="POST" enctype="multipart/form-data" class="create-post-form" novalidate>
         {% csrf_token %}
-        {% for field in create_post_form %}
+
+    {% for field in create_post_form %}
 
         <div class="form-group">
 
             <label for="{{ field.id_for_label }}">
-                {{ field.label }}
-                {% if field.field.required %}
-                    <span class="required">*</span>
-                {% endif %}
+            {{ field.label }}
+            {% if field.field.required %}
+                <span class="required">*</span>
+            {% endif %}
             </label>
 
             <div class="input-area">
+
+            {% if field.name == "thumbnail" %}
                 {{ field }}
 
-                {% if field.errors %}
-                    <div class="error-message">
-                        {{ field.errors }}
-                    </div>
+                {% if temp_files.thumbnail %}
+                    <p class="current-label">現在のサムネイル</p>
+
+                    <img src="/media/{{ temp_files.thumbnail }}" class="preview-img temp-thumbnail">
                 {% endif %}
+
+                <img id="thumbnailPreview">
+
+            {% elif field.name == "video" %}
+                {{ field }}
+                
+                {% if temp_files.video %}
+                    <p class="current-label">現在の動画</p>
+                    <video src="/media/{{ temp_files.video }}" class="preview-video temp-video" controls></video>
+                {% endif %}
+
+                <p class=help-text>動画は1分以内にしてください</p>
+                <video id="videoPreview" controls></video>
+
+            {% else %}
+                {{ field }}
+            {% endif %}
+
+            {% if field.errors and not temp_files %}
+                <div class="error-message">
+                {{ field.errors }}
+                </div>
+            {% endif %}
+
             </div>
 
         </div>
 
-        {% endfor %}
+    {% endfor %}
+
         <input type="submit" value="確認" class="confirm-btn"><br>
     </form>    
 </body>
