@@ -30,6 +30,8 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
   margin-right: 8px;
 }
 
@@ -41,7 +43,7 @@
 .thumbnail {
   width: 100%;
   aspect-ratio: 16 / 9;
-  object-fit: contain;
+  object-fit: cover;
   display: block;
 }
 
