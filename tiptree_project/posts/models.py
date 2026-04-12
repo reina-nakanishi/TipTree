@@ -66,7 +66,6 @@ class Post(models.Model):
         upload_to='posts/videos/',
         validators=[FileExtensionValidator(['mp4','mov','avi'],message="MP4,MOV,AVIから動画を選択してください"),validate_video_duration])
     content = models.TextField()
-    description = models.TextField(null=True, blank=True)
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     uppdated_at = models.DateTimeField(auto_now=True)
