@@ -5,7 +5,7 @@
     </a>
 
     {% if login_redirect %}
-    <a href="{% url 'accounts:login' %}?next={% url 'posts:post_detail' post.id %}" class="thumbnail-link">
+    <a href="{% url 'accounts:login' %}?next={% url 'posts:post_detail' post.id %}" class="thumbnail-link login" data-type="auth" data-url="{% url 'accounts:login' %}">
     {% else %}
     <a href="{% url 'posts:post_detail' post.id %}" class="thumbnail-link">
     {% endif %}
@@ -14,18 +14,24 @@
 
     <div class="post-info">
         {% if login_redirect %}
-        <a href="{% url 'accounts:login' %}?next={% url 'posts:post_detail' post.id %}" class="post-title-link">
+        <a href="{% url 'accounts:login' %}?next={% url 'posts:post_detail' post.id %}" class="post-title-link login" data-type="auth" data-url="{% url 'accounts:login' %}">
         {% else %}
         <a href="{% url 'posts:post_detail' post.id %}" class="post-title-link">
         {% endif %}
             <h3>{{ post.title }}</h3>
         </a>
-        <p class="post-category">{{post.category.parent.name}}：{{ post.category }}</p>
+        <p class="post-category">
+            {% if post.category.parent %}
+                {{ post.category.parent.name }}：{{ post.category }}
+            {% else %}
+                {{ post.category }}
+            {% endif %}
+        </p>
     </div>
 
     <div class="post-stats">
         <span class="likes">
-            <i class="far fa-thumbs-up"></i>
+            <i class="fas fa-thumbs-up"></i>
             <span>{{ post.help_count }}</span>
         </span>
 
@@ -35,7 +41,13 @@
         </span>
         <form action="{% url 'posts:toggle_save' post.id %}" method="post">
             {% csrf_token %}
-            <button type="submit" class="save-btn">
+            <button type="submit" class="save-btn"
+                {% if not user.is_authenticated %}
+                    class="save-btn login"
+                    data-type="auth"
+                    data-url="{% url 'accounts:login' %}"
+                {% endif %}
+            >
                 {% if user in post.saved_users.all %}
                 <i class="fas fa-bookmark"></i>
                 {% else %}
