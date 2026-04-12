@@ -31,21 +31,20 @@ table {
 }
 
 .post-table .preview-thumb {
-  width: 200px;
-  border-radius: 10px;
   display: block;
-  margin-bottom: 10px;
-  flex-shrink: 0;
-  max-width: none;
+  width: 100%;
+  max-width: 320px;   
+  aspect-ratio: 16 / 9;
+  object-fit: cover;  
+  border-radius: 10px; 
 }
 
 .post-table .preview-video {
+  display: block;
   width: 250px;
   border-radius: 10px;
-  display: block;
-  margin-bottom: 10px;
-  flex-shrink: 0;
-  max-width: none;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
 }
 
 .post-table td:nth-child(2) {
