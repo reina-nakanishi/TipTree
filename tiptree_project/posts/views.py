@@ -185,6 +185,15 @@ def confirm(request):
                         save=False,
                     )
                 post.save()
+                
+                description = create_post_form.cleaned_data.get('description')
+
+                if description:
+                    Supplements.objects.create(
+                        post=post,
+                        user=request.user,
+                        content=description,
+                    )
 
         # セッションの temp パスを消す
         request.session.pop('temp_post_files', None)
