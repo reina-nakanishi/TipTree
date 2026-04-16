@@ -6,7 +6,6 @@ app_name = 'posts'
 urlpatterns = [
     path('create_post', views.create_post, name = 'create_post'),
     path("load_child_categories/", views.load_child_categories, name="load_child_categories"),
-    path('confirm', views.confirm, name = 'confirm'),
     path('edit_post/<int:post_id>', views.edit_post, name = 'edit_post'),
     path("<int:post_id>/save/", views.toggle_save, name="toggle_save"),
     path('saved', views.saved_post_list, name = 'saved_post_list'),
