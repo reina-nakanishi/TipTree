@@ -3,6 +3,7 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'posts/css/create_post.css' %}">
+<link rel="stylesheet" href="{% static 'posts/css/confirm.css' %}">
 {% endblock %}
 {% block content %}
 <body>
@@ -24,23 +25,10 @@
 
             {% if field.name == "thumbnail" %}
                 {{ field }}
-
-                {% if temp_files.thumbnail %}
-                    <p class="current-label">現在のサムネイル</p>
-
-                    <img src="/media/{{ temp_files.thumbnail }}" class="preview-img temp-thumbnail">
-                {% endif %}
-
                 <img id="thumbnailPreview">
 
             {% elif field.name == "video" %}
                 {{ field }}
-                
-                {% if temp_files.video %}
-                    <p class="current-label">現在の動画</p>
-                    <video src="/media/{{ temp_files.video }}" class="preview-video temp-video" controls></video>
-                {% endif %}
-
                 <p class=help-text>動画は1分以内にしてください</p>
                 <video id="videoPreview" controls></video>
 
@@ -48,7 +36,7 @@
                 {{ field }}
             {% endif %}
 
-            {% if field.errors and not temp_files %}
+            {% if field.errors %}
                 <div class="error-message">
                 {{ field.errors }}
                 </div>
@@ -60,7 +48,63 @@
 
     {% endfor %}
 
-        <input type="submit" value="確認" class="confirm-btn"><br>
+        <button type="button" class="confirm-btn" id="openConfirmBtn">
+            確認
+        </button>
+
+        <div id="confirmArea" style="display:none;">
+            <h3 class="title">
+                この内容で投稿する場合は投稿ボタンを押してください。
+            </h3>
+
+            <table class="post-table">
+                <tr>
+                    <td>タイトル</td>
+                    <td id="confirmTitle"></td>
+                </tr>
+
+                <tr>
+                    <td>カテゴリー</td>
+                    <td id="confirmParentCategory"></td>
+                </tr>
+
+                <tr>
+                    <td>サブカテゴリー</td>
+                    <td id="confirmCategory"></td>
+                </tr>
+
+                <tr>
+                    <td>サムネイル画像</td>
+                    <td>
+                        <img id="confirmThumbnail" class="preview-thumb">
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>動画</td>
+                    <td>
+                        <video id="confirmVideo" class="preview-video" controls></video>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>本文</td>
+                    <td id="confirmContent"></td>
+                </tr>
+
+                <tr>
+                    <td>補足説明</td>
+                    <td id="confirmDescription"></td>
+                </tr>
+            </table>
+
+            <div class="action-btn">
+                <button type="button" id="backBtn" class="back-btn">戻る</button>
+                <button type="submit" id="submitBtn" class="regist-btn">
+                    投稿する
+                </button>
+            </div>
+        </div>
     </form>    
 </body>
 {% endblock %}
