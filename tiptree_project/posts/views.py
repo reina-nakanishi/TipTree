@@ -17,113 +17,39 @@ logger = logging.getLogger(__name__)
 
 @login_required
 def create_post(request):
-    temp_files = request.session.get('temp_post_files', {})
-
-    is_back = 'back_form_data' in request.session
-
-    if 'back_form_data' in request.session:
-        form_data = request.session.pop('back_form_data')
-        create_post_form = forms.CreatePostForm(form_data)
-
-        return render(request, "posts/create_post.html", {
-            "create_post_form": create_post_form,
-            "temp_files": temp_files,
-            "MEDIA_URL": settings.MEDIA_URL
-        })
-    
-    create_post_form = forms.CreatePostForm(request.POST or None, request.FILES or None)
-    
-    
     if request.method == "POST":
-
-        # required外す
-        if temp_files.get('thumbnail'):
-            create_post_form.fields['thumbnail'].required = False
-
-        if temp_files.get('video'):
-            create_post_form.fields['video'].required = False
-
-
-    if create_post_form.is_valid():
-
-        # モデルインスタンスを作る（DBには保存しない）
-        post = create_post_form.save(commit=False)
-        post.user = request.user
-        
-        if not post.category_id:
-            post.category = create_post_form.cleaned_data.get('parent_category')
-
-        # --- 一時保存処理（thumbnail と video を MEDIA_ROOT/tmp/ に保存） ---
-        tmp_folder = 'tmp'
-        thumb = create_post_form.cleaned_data.get('thumbnail')
-        video = create_post_form.cleaned_data.get('video')
-
-        temp_paths = temp_files.copy() #一時保存ファイルの管理表　削除、参照する際に用いる
-        
-        if not create_post_form.cleaned_data.get('thumbnail') and temp_files.get('thumbnail'):
-            post.thumbnail.name = temp_files['thumbnail']
-
-        if not create_post_form.cleaned_data.get('video') and temp_files.get('video'):
-            post.video.name = temp_files['video']
-        
-        if thumb and hasattr(thumb, 'name'):
-            if temp_files.get('thumbnail'):
-                default_storage.delete(temp_files['thumbnail'])
-            
-            ext = os.path.splitext(thumb.name)[1]
-            tmp_name = f'{tmp_folder}/{uuid.uuid4().hex}{ext}'
-
-            content = ContentFile(b'')
-            for chunk in thumb.chunks():
-                content.write(chunk)
-
-            saved_path = default_storage.save(tmp_name, content)
-            post.thumbnail.name = saved_path
-            temp_paths['thumbnail'] = saved_path
-        
-        elif temp_files.get('thumbnail'):
-            temp_paths['thumbnail'] = temp_files['thumbnail']
-            
-            #ext=extension(拡張子),os.path.splitext:ファイル名を名前[0],拡張子[1]に分解する関数
-
-        if video and hasattr(video, 'name'):
-            if temp_files.get('video'):
-                default_storage.delete(temp_files['video'])
-            
-            ext = os.path.splitext(video.name)[1]
-            tmp_name = f'{tmp_folder}/{uuid.uuid4().hex}{ext}'
-
-            content = ContentFile(b'')
-            for chunk in video.chunks():
-                content.write(chunk)
-
-            saved_path = default_storage.save(tmp_name, content)
-            post.video.name = saved_path
-            temp_paths['video'] = saved_path
-            
-        elif temp_files.get('video'):
-            temp_paths['video'] = temp_files['video']
-
-        # 保存した一時パスをセッションに入れておく（confirmで参照 / backで削除に使える）
-        request.session['temp_post_files'] = temp_paths
-
-        return render(
-            request,
-            'posts/confirm.html',
-            context={
-                'create_post_form': create_post_form, 
-                'post': post,
-                'MEDIA_URL': settings.MEDIA_URL
-            }
+        create_post_form = forms.CreatePostForm(
+            request.POST,
+            request.FILES
         )
 
+        if create_post_form.is_valid():
+            post = create_post_form.save(commit=False)
+            post.user = request.user
+
+            if not post.category_id:
+                post.category = create_post_form.cleaned_data.get('parent_category')
+
+            post.save()
+
+            description = create_post_form.cleaned_data.get('description')
+            if description:
+                Supplements.objects.create(
+                    post=post,
+                    user=request.user,
+                    content=description,
+                )
+
+            return redirect('accounts:my_page')
+
+    else:
+        create_post_form = forms.CreatePostForm()
 
     return render(
         request,
         'posts/create_post.html',
-        context={
+        {
             'create_post_form': create_post_form,
-            'MEDIA_URL': settings.MEDIA_URL,
         }
     )
     
@@ -138,72 +64,6 @@ def load_child_categories(request):
     ]
     return JsonResponse(data, safe=False)
 
-
-@login_required
-def confirm(request):
-    if request.method != "POST":
-        return redirect('posts:create_post')
-
-    create_post_form = forms.CreatePostForm(request.POST or None, request.FILES or None, validate_file=False)
-    action = request.POST.get('action')
-
-    temp_paths = request.session.get('temp_post_files', {})
-
-    if action == 'back':
-        # 戻るときは一時ファイルを削除してフォームに戻す
-        # for p in temp_paths.values():
-        #     try:
-        #         default_storage.delete(p)
-        #     except Exception as e:
-        #         logger.warning(f"Temp file delete failed: {p} ({e})")
-        #request.session.pop('temp_post_files', None)  #temp_post_filesがあれば削除
-        request.session['back_form_data'] = request.POST
-        return redirect('posts:create_post')
-
-    elif action == 'done':
-        post = create_post_form.save(commit=False)
-        post.user = request.user
-
-        category = create_post_form.cleaned_data.get('category')
-        parent = create_post_form.cleaned_data.get('parent_category')
-        post.category = category if category else parent
-
-        for field_name, temp_path in temp_paths.items():
-
-            if default_storage.exists(temp_path):
-                with default_storage.open(temp_path, 'rb') as f:
-                    file_data = File(f)
-                    original_name = os.path.basename(temp_path)
-                    ext = os.path.splitext(original_name)[1]
-
-                    # UUID + 拡張子
-                    new_filename = f"{uuid.uuid4().hex}{ext}"
-
-                    getattr(post, field_name).save(
-                        new_filename,
-                        file_data,
-                        save=False,
-                    )
-                post.save()
-                
-                description = create_post_form.cleaned_data.get('description')
-
-                if description:
-                    Supplements.objects.create(
-                        post=post,
-                        user=request.user,
-                        content=description,
-                    )
-
-        # セッションの temp パスを消す
-        request.session.pop('temp_post_files', None)
-        return redirect('accounts:my_page')
-
-    # それ以外（バリデーションNGなど）
-    return render(request, "posts/confirm.html", context={
-        'create_post_form': create_post_form,
-    })
-    
 
 @login_required
 def edit_post(request, post_id):
