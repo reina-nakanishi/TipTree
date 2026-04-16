@@ -53,14 +53,17 @@
 <div class="form-group">
     <label>サムネイル</label>
     <div class="input-area">
-        {% if post.thumbnail %}
-            <p class="current-label">現在の画像</p>
-            <img src="{{ post.thumbnail.url }}" class="current-thumbnail">
-        {% endif %}
-
-        <p class="change-label">新しい画像を選択</p>
         {{ edit_post_form.thumbnail }}
-        <img id="thumbnailPreview" class="preview-img">
+
+        <img
+            id="thumbnailPreview"
+            class="preview-img"
+            {% if post.thumbnail %}
+                src="{{ post.thumbnail.url }}"
+                style="display:block;"
+            {% endif %}
+        >
+
         <div class="error-message">{{ edit_post_form.thumbnail.errors }}</div>
     </div>
 </div>
@@ -68,14 +71,21 @@
 <div class="form-group">
     <label>動画</label>
     <div class="input-area">
-        {% if post.video %}
-            <p class="current-label">現在の動画</p>
-            <video source src="{{ post.video.url }}"class="current-video" controls></video>
-        {% endif %}
-
-        <p class="change-label">新しい動画を選択</p>
         {{ edit_post_form.video }}
-        <video id="videoPreview" class="preview-video" controls></video>
+
+        <video
+            id="videoPreview"
+            class="preview-video"
+            controls
+            {% if post.video %}
+                style="display:block;"
+            {% endif %}
+        >
+            {% if post.video %}
+                <source src="{{ post.video.url }}">
+            {% endif %}
+        </video>
+
         <div class="error-message">{{ edit_post_form.video.errors }}</div>
     </div>
 </div>
