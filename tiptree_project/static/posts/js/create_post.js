@@ -48,10 +48,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const file = thumbnailInput.files[0];
     if (!file) return;
 
-    // temp / current 両方消す
-    document.querySelectorAll(".temp-thumbnail, .current-thumbnail")
-      .forEach(el => el.remove());
-
     const url = URL.createObjectURL(file);
     thumbnailPreview.src = url;
     thumbnailPreview.style.display = "block";
@@ -66,14 +62,85 @@ document.addEventListener("DOMContentLoaded", () => {
     const file = videoInput.files[0];
     if (!file) return;
 
-    // temp / current 両方消す
-    document.querySelectorAll(".temp-video, .current-video")
-      .forEach(el => el.remove());
-
     const url = URL.createObjectURL(file);
     videoPreview.src = url;
     videoPreview.style.display = "block";
     videoPreview.setAttribute("controls", "controls");
+  });
+
+  const openConfirmBtn = document.getElementById("openConfirmBtn");
+  const submitBtn = document.getElementById("submitBtn");
+  const confirmArea = document.getElementById("confirmArea");
+  const formGroups = document.querySelectorAll(".form-group");
+  const backBtn = document.getElementById("backBtn");
+
+  openConfirmBtn?.addEventListener("click", () => {
+    const titleInput = document.querySelector("[name='title']");
+    const parentCategoryInput = document.querySelector("[name='parent_category']");
+    const categoryInput = document.querySelector("[name='category']");
+    const contentInput = document.querySelector("[name='content']");
+    const descriptionInput = document.querySelector("[name='description']");
+
+    const confirmTitle = document.getElementById("confirmTitle");
+    const confirmParentCategory = document.getElementById("confirmParentCategory");
+    const confirmCategory = document.getElementById("confirmCategory");
+    const confirmContent = document.getElementById("confirmContent");
+    const confirmDescription = document.getElementById("confirmDescription");
+    const confirmThumbnail = document.getElementById("confirmThumbnail");
+    const confirmVideo = document.getElementById("confirmVideo");
+
+
+    // テキスト反映
+    confirmTitle.textContent = titleInput.value;
+
+    confirmParentCategory.textContent =
+      parentCategoryInput.selectedOptions[0]?.text || "";
+
+    confirmCategory.textContent =
+      categoryInput.value
+        ? categoryInput.selectedOptions[0].text
+        : "未選択";
+
+    confirmContent.textContent = contentInput.value;
+    confirmDescription.textContent = descriptionInput.value;
+
+
+    // サムネ反映
+    if (thumbnailPreview.src) {
+      confirmThumbnail.src = thumbnailPreview.src;
+      confirmThumbnail.style.display = "block";
+    } else {
+      confirmThumbnail.style.display = "none";
+    }
+
+
+    // 動画反映
+    if (videoPreview.src) {
+      confirmVideo.src = videoPreview.src;
+      confirmVideo.style.display = "block";
+    } else {
+      confirmVideo.style.display = "none";
+    }
+
+
+    // 入力フォーム非表示
+    formGroups.forEach(group => {
+      group.style.display = "none";
+    });
+
+    openConfirmBtn.style.display = "none";
+    confirmArea.style.display = "block";
+    submitBtn.style.display = "inline-block";
+  });
+
+  backBtn?.addEventListener("click", () => {
+    formGroups.forEach(group => {
+      group.style.display = "";
+    });
+
+    confirmArea.style.display = "none";
+    submitBtn.style.display = "none";
+    openConfirmBtn.style.display = "";
   });
 
 });
