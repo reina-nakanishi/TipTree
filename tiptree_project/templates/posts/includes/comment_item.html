@@ -33,7 +33,7 @@
 
         <form method="post" action="{% url 'posts:comment_reply' comment.id %}" class="comment-reply-form">
             {% csrf_token %}
-            {{ comment_reply_form.content }}
+            <textarea name="content" class="auto-resize reply-textarea" rows="1" required></textarea>
             <button type="submit">送信</button>
         </form>
 
