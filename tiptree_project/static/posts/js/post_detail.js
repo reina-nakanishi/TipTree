@@ -1,66 +1,25 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  const modal = document.getElementById("delete-modal");
-  const form = document.getElementById("delete-form");
-
-  if (modal && form) {
-
-    const modalText = modal.querySelector(".modal-text");
-    const subText = modal.querySelector(".modal-subtext");
-    const closeBtn = modal.querySelector(".close-btn");
-
-    document.addEventListener("click", (e) => {
-
-      const btn = e.target.closest(".open-delete-modal, .delete-btn");
-
-      if (!btn) return;
-
-      const modal = document.getElementById("delete-modal");
-      const form = document.getElementById("delete-form");
-
-      if (!modal || !form) return;
-
-      const modalText = modal.querySelector(".modal-text");
-      const subText = modal.querySelector(".modal-subtext");
-
-      form.action = btn.dataset.url;
-
-      modalText.textContent =
-        btn.dataset.text || "本当に削除しますか？";
-
-      if (btn.dataset.content) {
-        subText.textContent = btn.dataset.content;
-        subText.style.display = "block";
-      } else {
-        subText.style.display = "none";
-      }
-
-      modal.classList.remove("hidden");
-    });
-
-      function closeDeleteModal() {
-        modal.classList.add("hidden");
-        form.action = ""; // 念のためリセット
-      }
-  }
-
   const text = document.getElementById("post-text");
   const btn = document.getElementById("toggle-btn");
 
-  if (text.scrollHeight <= text.clientHeight) {
-    btn.style.display = "none";
-    return;
-  }
+  if (text && btn) {  // ← これ追加！！
 
-  btn.addEventListener("click", () => {
-    text.classList.toggle("collapsed");
-
-    if (text.classList.contains("collapsed")) {
-      btn.textContent = "もっと見る";
-    } else {
-      btn.textContent = "閉じる";
+    if (text.scrollHeight <= text.clientHeight) {
+      btn.style.display = "none";
     }
-  });
+
+    btn.addEventListener("click", () => {
+      text.classList.toggle("collapsed");
+
+      if (text.classList.contains("collapsed")) {
+        btn.textContent = "もっと見る";
+      } else {
+        btn.textContent = "閉じる";
+      }
+    });
+
+  }
 
   document.addEventListener("input", function (e) {
     if (e.target.classList.contains("auto-resize")) {
@@ -70,19 +29,27 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.addEventListener("click", (e) => {
+    console.log("clicked:", e.target);
 
     const btn = e.target.closest(".reply-btn");
     if (!btn) return;
 
-    const container = btn.closest(".comment-content, .supplement-content");
+
+    const container =
+      btn.closest(".comment-content") ||
+      btn.closest(".supplement-content");
+
+
     if (!container) return;
 
-    const form = container.querySelector(
-      ".comment-reply-form, .supplement-reply-form"
-    );
+    const form =
+      container.querySelector(".comment-reply-form") ||
+      container.querySelector(".supplement-reply-form");
+
     if (!form) return;
 
     form.classList.toggle("is-open");
+
   });
 
   document.querySelectorAll(".toggle-replies").forEach(button => {
