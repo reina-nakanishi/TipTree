@@ -22,23 +22,22 @@ document.addEventListener("DOMContentLoaded", () => {
     auth:"この操作にはログインが必要です"
   };
 
-  document.querySelectorAll("[data-type]").forEach(el => {
-    el.addEventListener("click", (e) => {
+  document.addEventListener("click", (e) => {
+    const el = e.target.closest("[data-type]");
+    if (!el) return;
 
-      const url = el.dataset.url;
-      const title = el.dataset.title;
-      const type = el.dataset.type;
+    const url = el.dataset.url;
+    const title = el.dataset.title;
+    const type = el.dataset.type;
 
-      e.preventDefault();
+    e.preventDefault();
 
-      const message = `${messages[type]}\n${title || ""}`;
+    const message = `${messages[type]}\n${title || ""}`;
 
-      openModal({
-        message: message,
-        url: url,
-        type: type
-      });
-
+    openModal({
+      message: message,
+      url: url,
+      type: type
     });
   });
 
