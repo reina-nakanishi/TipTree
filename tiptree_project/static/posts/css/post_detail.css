@@ -54,6 +54,7 @@
     white-space: nowrap;
     transition: 0.2s;
     font-weight: 500;
+    flex-shrink: 0;
   
     border: none;
   }
@@ -156,13 +157,12 @@
     display: flex;
     align-items: center;
     gap: 8px;       
-    width: 100%;     
+    width: 100%;  
   }
 
-  .supplement-form textarea,
-  .comment-form textarea{
-    width: calc(100% - 120px);
-    box-sizing: border-box;          
+  .supplement-reply-form,
+  .comment-reply-form  {
+    display: none;    
   }
 
   .supplement-form button,
@@ -178,6 +178,7 @@
     transition: 0.2s;
     font-weight: 500;
     align-self: flex-end;
+    flex-shrink: 0;
   
     border: none;
   }
@@ -258,23 +259,19 @@
     background: #f2f2f2;
   }
 
-  .supplement-reply-form textarea,
-  .comment-reply-form textarea {
-    width: calc(100% - 120px);
-    box-sizing: border-box; 
-  }
-
-  .supplement-reply-form,
-  .comment-reply-form {
-    display: none;
+  .supplement-reply-form.is-open,
+  .comment-reply-form.is-open {
+    display: flex;
     align-items: center;
     gap: 8px;       
     width: 100%;  
   }
 
-  .supplement-reply-form.is-open,
-  .comment-reply-form.is-open {
-  display: flex; 
+  .supplement-form textarea,
+  .comment-form textarea,
+  .reply-textarea {
+    width: calc(100% - 120px);
+    box-sizing: border-box;
   }
 
   .reply-user-icon  {
@@ -326,4 +323,19 @@
 
   .toggle-replies:hover {
     background: #f2f2f2;
+  }
+
+  .comment-reply-item,
+  .supplement-reply-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .reply-body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-start;
   }
