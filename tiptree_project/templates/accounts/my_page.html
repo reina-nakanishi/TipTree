@@ -14,41 +14,44 @@
       <tr>
         <td>アカウント名</td>
         <td class="colon">:</td>
-        <td>{{user.username}}</td>
+        <td>{{page_user.username}}</td>
       </tr>
       <tr>
         <td>自己紹介</td>
         <td class="colon">:</td>
-        <td>{{user.bio}}</td>
+        <td>{{page_user.bio}}</td>
       </tr>
   </table>
 
-  <span class="my-action-title">マイアクション</span>
-  <div class="my-action">
-    <span>
-      <a href="{% url 'posts:saved_post_list' %}"><i class="fas fa-bookmark"></i>あとで見る</a>
-    </span>
-    <span>
-      <a href="{% url 'posts:helped_post_list' %}"><i class="far fa-thumbs-up"></i>役立った</a>
-    </span>
-  </div>
-  <div class="post-action-btn">
-    {% if request.user == page_user %}
-    <a href="{% url 'accounts:user_edit' %}" class="btn">
-      編集
-    </a>
-    {% endif %}
-        <button
-         class="delete-btn logout-btn"
-         data-url="{% url 'accounts:logout' %}"
-         data-type="logout"
-         data-title=""
-        >
-          ログアウト
-        </button>
-  </div>
+  {% if request.user == page_user %}
+    <span class="my-action-title">マイアクション</span>
 
+    <div class="my-action">
+      <span>
+        <a href="{% url 'posts:saved_post_list' %}"><i class="fas fa-bookmark"></i>あとで見る</a>
+      </span>
+      <span>
+        <a href="{% url 'posts:helped_post_list' %}"><i class="far fa-thumbs-up"></i>役立った</a>
+      </span>
+    </div>
+    
+    <div class="post-action-btn">
+      <a href="{% url 'accounts:user_edit' %}" class="btn">
+        編集
+      </a>
+      
+      <button
+        class="delete-btn logout-btn"
+        data-url="{% url 'accounts:logout' %}"
+        data-type="logout"
+        data-title=""
+      >
+        ログアウト
+      </button>
+    </div>
+  {% endif %}
 </div>
+
 <div class="post-grid">
   {% for post in page_obj %}
     {% include "components/post_card.html" %}
