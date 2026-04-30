@@ -1,3 +1,4 @@
+console.log("JSファイル読み込みOK");
 document.addEventListener("DOMContentLoaded", () => {
   const parentSelect = document.getElementById("parent-category");
   const childSelect = document.getElementById("child-category");
@@ -141,6 +142,16 @@ document.addEventListener("DOMContentLoaded", () => {
     confirmArea.style.display = "none";
     submitBtn.style.display = "none";
     openConfirmBtn.style.display = "";
+  });
+
+  const form = document.querySelector(".create-post-form");
+
+  console.log("form:", form);
+  console.log("submitBtn:", submitBtn);
+
+  form.addEventListener("submit", () => {
+    submitBtn.disabled = true;
+    submitBtn.textContent = "投稿中...";
   });
 
 });
