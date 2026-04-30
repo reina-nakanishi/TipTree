@@ -10,6 +10,8 @@
     <form method="POST" enctype="multipart/form-data" class="create-post-form" novalidate>
         {% csrf_token %}
 
+        <input type="hidden" name="token" value="{{ token }}">
+
     {% for field in create_post_form %}
 
         <div class="form-group">
@@ -29,7 +31,7 @@
 
             {% elif field.name == "video" %}
                 {{ field }}
-                <p class=help-text>動画は1分以内にしてください</p>
+                <p class=help-text>動画は30MB以内にしてください</p>
                 <video id="videoPreview" controls></video>
 
             {% else %}
