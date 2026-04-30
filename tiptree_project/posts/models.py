@@ -5,6 +5,7 @@ import tempfile
 import subprocess
 import json
 from django.core.exceptions import ValidationError
+import uuid
 
 class Category(models.Model):
     name = models.CharField(max_length=50)
@@ -18,45 +19,10 @@ class Category(models.Model):
     
     def __str__(self):
         return self.name
-
-
-def validate_video_duration(value):
-    try:
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.mp4') as tmp:
-            for chunk in value.chunks():
-                tmp.write(chunk)
-            tmp_path = tmp.name
-            
-        result = subprocess.run(
-            [
-                'ffprobe',
-                '-v','error',
-                '-show_entries','format=duration',
-                '-of','json',
-                tmp_path,
-            ],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True
-        )
-        
-        info = json.loads(result.stdout or '{}')
-        duration = float(info.get('format',{}).get('duration', 0))
-        
-        if duration == 0:
-            raise ValidationError('動画を確認できませんでした。')
-        
-        if duration > 60:
-            raise ValidationError('動画は1分以内にしてください。')
-        
-    except ValidationError:
-        raise
-    
-    except Exception:
-        raise ValidationError('動画を確認できませんでした。')
     
 
 class Post(models.Model):
+    token = models.UUIDField(default=uuid.uuid4, unique=True)
     title = models.CharField(max_length=100)
     category = models.ForeignKey(Category, on_delete=models.PROTECT)
     thumbnail = models.FileField(
@@ -64,7 +30,7 @@ class Post(models.Model):
         validators=[FileExtensionValidator(['jpg','jpeg','png'],message="JPEGまたはPNG画像を選択してください")])
     video = models.FileField(
         upload_to='posts/videos/',
-        validators=[FileExtensionValidator(['mp4','mov','avi'],message="MP4,MOV,AVIから動画を選択してください"),validate_video_duration])
+        validators=[FileExtensionValidator(['mp4','mov','avi'],message="MP4,MOV,AVIから動画を選択してください")])
     content = models.TextField()
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
