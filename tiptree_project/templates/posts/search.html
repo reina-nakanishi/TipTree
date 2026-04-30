@@ -9,7 +9,7 @@
 
 {% block content %}
 
-    <h2>「{{ query }}」の検索結果</h2>
+    <h2 class="search-title">「{{ query }}」の検索結果</h2>
 
     {% if posts %}
         <div class="post-grid">
@@ -18,7 +18,7 @@
         {% endfor %}
         </div>
     {% else %}
-    <p>該当する投稿がありません</p>
+    <p class=no-results>該当する投稿がありません</p>
     {% endif %}
     
     {% if page_obj.paginator.num_pages > 1 %}
