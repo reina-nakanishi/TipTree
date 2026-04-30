@@ -43,11 +43,13 @@
 
     </div>
 
-    {% if not user.is_authenticated and forloop.counter <= 3 %}
+    {% comment %} {% if not user.is_authenticated and forloop.counter <= 3 %}
       {% include "components/post_card.html" with login_redirect=True %}
     {% else %}
       {% include "components/post_card.html" with login_redirect=False %}
-    {% endif %}
+    {% endif %} {% endcomment %}
+
+      {% include "components/post_card.html" %}
 
   </div>
 {% endfor %}
