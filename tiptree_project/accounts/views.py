@@ -13,6 +13,7 @@ from .forms import CustomPasswordResetForm,CustomSetPasswordForm
 from django.urls import reverse_lazy
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404
+from django.conf import settings
 
 def regist(request):
     regist_form = forms.RegistForm(request.POST or None)
@@ -154,6 +155,8 @@ class CustomPasswordResetView(PasswordResetView):
     template_name = "accounts/password_reset_form.html"
     success_url = reverse_lazy('accounts:password_reset_done')
     email_template_name = "accounts/password_reset_email.html"
+    subject_template_name = "accounts/password_reset_subject.txt"
+    from_email = settings.DEFAULT_FROM_EMAIL
     
     def form_valid(self, form):
         self.request.session['reset_email'] = form.cleaned_data['email']
