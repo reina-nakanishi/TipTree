@@ -43,9 +43,6 @@ class CreatePostForm(forms.ModelForm):
                 'required':'タイトルを入力してください。',
                 'max_length':'タイトルは100字以内で書いてください。'
             },
-            'category':{
-                'required':'カテゴリーを選択してください。'
-            },
             'thumbnail':{
                 'required':'サムネイル画像を選択してください。'
             },
@@ -79,64 +76,26 @@ class CreatePostForm(forms.ModelForm):
                 self.fields['category'].queryset = Category.objects.filter(parent_id=parent_id)
             except (ValueError, TypeError):
                 pass
-                    
-    def get_video_duration(self,file):
-        from tempfile import NamedTemporaryFile
-        import subprocess, json, os
-        
-        with NamedTemporaryFile(delete=False, suffix='.mp4') as tmp:
-            for chunk in file.chunks():
-                tmp.write(chunk)
-                tmp_path = tmp.name
-                
-        try:
-            result = subprocess.run(
-            [
-                'ffprobe',
-                '-v','error',
-                '-show_entries','format=duration',
-                '-of','json',
-                tmp_path,
-            ],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True
-            )
-            
-            print(result.stdout)
-            print("STDERR",result.stderr)
-            
-            info = json.loads(result.stdout)
-            duration = float(info.get("format",{}).get("duration",0))
-            
-        except Exception as e:
-            print("ffprobe error:",e)
-            duration = None
-    
-        finally:
-            os.remove(tmp_path)
-            
-        return duration
     
     def clean_video(self):
         video = self.cleaned_data.get('video')
-        
-        if not self.validate_file:
-            return video
-        
+
         if not video:
             return video
-        
-        valid_extentions = ['mp4','mov','avi']
-        if not any(video.name.lower().endswith(ext) for ext in valid_extentions):
-            raise ValidationError('対応している動画形式はMP4,MOV,AVIです。')
 
-        duration = self.get_video_duration(video)
-        if duration is None:
-            raise ValidationError('有効な動画ファイルを選択してください。')
-        if duration > 60:
-            raise ValidationError('動画は1分以内にしてください。')
-        
+        # 拡張子
+        valid_extensions = ['.mp4', '.mov']
+        if not any(video.name.lower().endswith(ext) for ext in valid_extensions):
+            raise ValidationError('MP4またはMOV形式の動画をアップしてください。')
+
+        # MIME
+        if not video.content_type.startswith('video/'):
+            raise ValidationError('動画ファイルを選択してください。')
+
+        # 容量
+        if video.size > 30 * 1024 * 1024:
+            raise ValidationError('動画は30MB以内にしてください。')
+
         return video
     
     def clean_thumbnail(self):
@@ -158,8 +117,16 @@ class CreatePostForm(forms.ModelForm):
 class EditPostForm(forms.ModelForm):
     
     parent_category = forms.ModelChoiceField(
-        queryset=Category.objects.filter(parent=None),
+        queryset=Category.objects.filter(parent__isnull=True),
+        required=True,
+        widget=forms.Select(attrs={"id": "parent-category"}),
         label="カテゴリ"
+    )
+    category = forms.ModelChoiceField(
+        queryset=Category.objects.none(),
+        required=False,
+        widget=forms.Select(attrs={"id": "child-category"}),
+        label="サブカテゴリ"
     )
     
     class Meta:
@@ -181,9 +148,6 @@ class EditPostForm(forms.ModelForm):
             'title':{
                 'required':'タイトルを入力してください。',
                 'max_length':'タイトルは100字以内で書いてください。'
-            },
-            'category':{
-                'required':'カテゴリーを選択してください。'
             },
             'thumbnail':{
                 'required':'サムネイル画像を選択してください。'
