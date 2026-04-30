@@ -1,5 +1,6 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from . import forms
+from django.contrib import messages
 from django.db.models import Q,Count
 from django.http import JsonResponse
 from .models import Post,Category,SavePost,HelpPost,Supplements,Comments,CommentReply,SupplementReply
@@ -11,6 +12,7 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.core.files import File
 from django.conf import settings
+from django.utils import timezone
 import logging
 logger = logging.getLogger(__name__)
 
@@ -22,15 +24,22 @@ def create_post(request):
             request.POST,
             request.FILES
         )
+        token = request.POST.get("token")
+
+        if Post.objects.filter(token=token).exists():
+            return redirect("accounts:my_page")
 
         if create_post_form.is_valid():
             post = create_post_form.save(commit=False)
             post.user = request.user
+            post.token = token
+            category = create_post_form.cleaned_data.get('category')
+            parent = create_post_form.cleaned_data.get('parent_category')
 
-            if not post.category_id:
-                post.category = create_post_form.cleaned_data.get('parent_category')
+            post.category = category or parent
 
             post.save()
+            messages.success(request,"投稿しました!")
 
             description = create_post_form.cleaned_data.get('description')
             if description:
@@ -44,12 +53,14 @@ def create_post(request):
 
     else:
         create_post_form = forms.CreatePostForm()
+        token = str(uuid.uuid4())
 
     return render(
         request,
         'posts/create_post.html',
         {
             'create_post_form': create_post_form,
+            'token': token
         }
     )
     
@@ -72,7 +83,12 @@ def edit_post(request, post_id):
         request.POST or None, request.FILES or None, instance=post
     )
     if edit_post_form.is_valid():
+        
+        if not post.category_id:
+            post.category = edit_post_form.cleaned_data.get('parent_category')
+        
         edit_post_form.save()
+        messages.success(request,"投稿を更新しました！")
         return redirect('accounts:my_page')
     
     return render(request,'posts/edit_post.html',context={
@@ -207,7 +223,7 @@ def post_delete(request, post_id):
 
     if request.method == "POST":
         post.delete()
-        return redirect('posts:my_page') 
+        return redirect('accounts:my_page') 
 
 
 @login_required
