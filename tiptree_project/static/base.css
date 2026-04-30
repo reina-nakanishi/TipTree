@@ -1,3 +1,10 @@
+header {
+  position: sticky;
+  top: 0;
+  z-index: 1000; 
+  background-color: #fff;
+}
+
 .header-container {
     display: flex;
     justify-content: space-between;
@@ -159,4 +166,15 @@
 
 #modal-actions .primary:hover {
   background: #90EE90;
+}
+
+.message {
+  padding: 10px;
+  margin: 10px 20px;
+  border-radius: 5px;
+}
+
+.message.success {
+  background-color: #d4edda;
+  color: #155724;
 }
