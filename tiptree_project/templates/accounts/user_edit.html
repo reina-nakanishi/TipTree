@@ -49,7 +49,10 @@
         <div class="error-message">{{ user_edit_form.email.errors }}</div>
     </div>
 </div>
-<input type="submit" value="保存" class="save-btn">
+<div class="action-btn">
+    <a href="{% url 'accounts:my_page'%}" class="back-btn">戻る</a>
+    <input type="submit" value="保存" class="save-btn">
+</div>
 </form>
 <a href="{% url 'accounts:change_password' %}">パスワード変更</a>
 {% endblock %}
