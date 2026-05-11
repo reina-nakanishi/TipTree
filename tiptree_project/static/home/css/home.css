@@ -60,8 +60,36 @@
   gap: 8px;
 }
 
+.empty-posts {
+  width: 100%;
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;   /* 縦並び */
+  align-items: center;      /* 横方向中央 */
+  justify-content: center;  /* 必要なら縦方向中央 */
+  text-align: center;
+  gap: 16px;                /* メッセージとボタンの間隔 */
+  padding: 60px 20px;
+}
+
 .message{
-text-align:center;
-font-size:16px;
-grid-column: 1 / -1;
+margin: 0;
+}
+
+.post-btn {
+    padding: 8px 16px;
+    background: #98FB98;
+    border-radius: 20px;
+    font-size: 14px;
+    white-space: nowrap;
+    transition: 0.2s;
+    text-decoration: none;
+    color: inherit;
+  
+    border: none;
+}
+
+.post-btn:hover {
+  background: #90EE90;
+  color: inherit;
 }
