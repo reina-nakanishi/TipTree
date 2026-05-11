@@ -6,7 +6,10 @@
 <link rel="stylesheet" href="{% static 'posts/css/confirm.css' %}">
 {% endblock %}
 {% block content %}
-<body>
+<div class="form-container">
+    <h2 class="page-title">投稿を作成</h1>
+    <p class="required-note">＊は必須項目です</p>
+
     <form method="POST" enctype="multipart/form-data" class="create-post-form" novalidate>
         {% csrf_token %}
 
@@ -108,7 +111,7 @@
             </div>
         </div>
     </form>    
-</body>
+</div>
 {% endblock %}
 
 {% block extra_js %}
