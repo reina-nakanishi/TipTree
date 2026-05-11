@@ -129,6 +129,7 @@ def user_edit(request):
     )
     if user_edit_form.is_valid():
         user_edit_form.save()
+        messages.success(request,"変更が完了しました！")
         return redirect('accounts:my_page')
     
     return render(request,'accounts/user_edit.html',context={
@@ -144,7 +145,9 @@ def change_password(request):
     if password_change_form.is_valid():
         user = password_change_form.save(commit=True)
         update_session_auth_hash(request, user)
+        messages.success(request,"変更が完了しました！")
         return redirect('accounts:my_page')
+    
     return render(request,'accounts/change_password.html',context={
         'password_change_form':password_change_form
     })
