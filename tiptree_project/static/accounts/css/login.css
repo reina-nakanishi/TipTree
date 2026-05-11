@@ -55,6 +55,12 @@
     margin-top: 10px;
 }
 
+.home-link {
+    display: block;
+    margin-top: 26px;
+    text-align: center;
+}
+
 .error-message {
     color: red;
     white-space: nowrap;
