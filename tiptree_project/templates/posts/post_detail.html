@@ -111,7 +111,11 @@
 
                 <form method="post"
                     action="{% url 'posts:supplement_create' post.id %}"
-                    class="supplement-form">
+                    class="supplement-form"
+                    {% if not user.is_authenticated %}
+                    data-login-required="true"
+                    data-url="{% url 'accounts:login' %}?next={{ request.path }}"
+                    {% endif %}>
                     {% csrf_token %}
                     {{ supplement_form.content }}
                     <button type="submit">補足を送信</button>
@@ -135,7 +139,11 @@
 
                 <form method="post"
                     action="{% url 'posts:comment_create' post.id %}"
-                    class="comment-form">
+                    class="comment-form"
+                    {% if not user.is_authenticated %}
+                    data-login-required="true"
+                    data-url="{% url 'accounts:login' %}?next={{ request.path }}"
+                    {% endif %}>
                     {% csrf_token %}
                     {{ comment_form.content }}
                     <button type="submit">送信</button>
