@@ -31,7 +31,12 @@
 
         </div>
 
-        <form method="post" action="{% url 'posts:comment_reply' comment.id %}" class="comment-reply-form">
+        <form method="post" action="{% url 'posts:comment_reply' comment.id %}" class="comment-reply-form"
+            {% if not user.is_authenticated %}
+            data-login-required="true"
+            data-url="{% url 'accounts:login' %}?next={{ request.path }}"
+            {% endif %}
+        >
             {% csrf_token %}
             <textarea name="content" class="auto-resize reply-textarea" rows="1" required></textarea>
             <button type="submit">送信</button>
