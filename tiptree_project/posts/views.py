@@ -441,16 +441,18 @@ def supplement_reply_delete(request, supplement_reply_id):
 def search(request):
     query = request.GET.get('q', '').strip()
     posts = []
-
-    paginator = Paginator(posts, 12)  # 1ページ12件
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
     
     if query:
         posts = Post.objects.filter(
             Q(title__icontains=query) |
-            Q(content__icontains=query)
-        ).order_by('-created_at')
+            Q(content__icontains=query) |
+            Q(category__name__icontains=query) |
+            Q(category__parent__name__icontains=query)
+        ).distinct().order_by('-created_at')
+    
+    paginator = Paginator(posts, 12)  # 1ページ12件
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
     return render(request, 'posts/search.html', {
         'query': query,
