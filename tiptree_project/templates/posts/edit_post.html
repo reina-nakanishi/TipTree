@@ -115,7 +115,10 @@
     </div>
 </div>
 
-<input type="submit" value="更新する" class="confirm-btn">
+<div class="action-btn">
+    <a href="{% url 'posts:post_detail' post.id %}" class="back-btn">戻る</a>
+    <input type="submit" value="更新する" class="save-btn">
+</div>
 
 </form>
 
