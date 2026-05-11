@@ -11,7 +11,10 @@ class CreatePostForm(forms.ModelForm):
         queryset=Category.objects.filter(parent__isnull=True),
         required=True,
         widget=forms.Select(attrs={"id": "parent-category"}),
-        label="カテゴリ"
+        label="カテゴリ",
+        error_messages={
+            "required":"カテゴリを選択してください。"
+        }
     )
     category = forms.ModelChoiceField(
         queryset=Category.objects.none(),
@@ -148,6 +151,9 @@ class EditPostForm(forms.ModelForm):
             'title':{
                 'required':'タイトルを入力してください。',
                 'max_length':'タイトルは100字以内で書いてください。'
+            },
+            'parent_category':{
+                'required':'カテゴリを選択してください。',
             },
             'thumbnail':{
                 'required':'サムネイル画像を選択してください。'
