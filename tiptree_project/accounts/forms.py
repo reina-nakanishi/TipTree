@@ -94,7 +94,7 @@ class PasswordChangeForm(forms.ModelForm):
     old_password = forms.CharField(
         label='元のパスワード', widget = forms.PasswordInput
     )
-    new_password1 = forms.CharField(label='新しいパスワード', max_length=50, min_length=8, 
+    new_password1 = forms.CharField(label='新しいパスワード', max_length=50, min_length=8,
                                widget=forms.PasswordInput,error_messages={
                                    'invalid':'パスワードは半角英数字8字以上50字以下で入力してください',
                                },
