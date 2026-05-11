@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from posts.models import Post,Category
 from django.core.paginator import Paginator   
+from django.db.models import Q
 
 def home(request):
     parent_id = request.GET.get("parent")
@@ -11,16 +12,19 @@ def home(request):
 
     posts = Post.objects.all().order_by("-created_at")  
     
-    paginator = Paginator(posts, 12)  # 1ページ12件
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    
     if parent_id:
         children = Category.objects.filter(parent_id=parent_id)
-        posts = posts.filter(category__parent_id=parent_id)
+        posts = posts.filter(
+            Q(category_id=parent_id) |
+            Q(category__parent_id=parent_id)
+        )
 
     if child_id:
         posts = posts.filter(category_id=child_id)
+
+    paginator = Paginator(posts, 12)  # 1ページ12件
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
     context = {
         "parents": parents,
