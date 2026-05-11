@@ -88,6 +88,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     e.preventDefault();
 
+    if (form.dataset.loginRequired === "true") {
+      openModal({
+        message: "この操作にはログインが必要です",
+        url: form.dataset.url,
+        type: "auth"
+      });
+      return;
+    }
+
     // 🔥 送信中チェック（ここが最重要）
     if (form.dataset.submitting === "true") {
       return;
