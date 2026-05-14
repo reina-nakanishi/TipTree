@@ -59,7 +59,8 @@
     font-size: 12px;
 }
 
-.error-message {
+.error-message,
+.js-error-message {
     color: red;
 }
 
