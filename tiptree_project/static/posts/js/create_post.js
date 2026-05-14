@@ -1,7 +1,12 @@
-console.log("JSファイル読み込みOK");
 document.addEventListener("DOMContentLoaded", () => {
   const parentSelect = document.getElementById("parent-category");
   const childSelect = document.getElementById("child-category");
+
+  const openConfirmBtn = document.getElementById("openConfirmBtn");
+  const submitBtn = document.getElementById("submitBtn");
+  const confirmArea = document.getElementById("confirmArea");
+  const formGroups = document.querySelectorAll(".form-group");
+  const backBtn = document.getElementById("backBtn");
 
   parentSelect?.addEventListener("change", () => {
     const parentId = parentSelect.value;
@@ -69,13 +74,185 @@ document.addEventListener("DOMContentLoaded", () => {
     videoPreview.setAttribute("controls", "controls");
   });
 
-  const openConfirmBtn = document.getElementById("openConfirmBtn");
-  const submitBtn = document.getElementById("submitBtn");
-  const confirmArea = document.getElementById("confirmArea");
-  const formGroups = document.querySelectorAll(".form-group");
-  const backBtn = document.getElementById("backBtn");
+  function validateRequiredFields() {
+    // タイトル
+    const titleInput = document.getElementById("id_title");
+    titleInput.setCustomValidity("");
+
+    if (!titleInput.value.trim()) {
+      titleInput.setCustomValidity("タイトルを入力してください。");
+    } else if (titleInput.value.length > 100) {
+      titleInput.setCustomValidity("タイトルは100字以内で書いてください。");
+    }
+
+    // カテゴリ（親カテゴリ）
+    const parentCategoryInput =
+      document.getElementById("parent-category");
+    parentCategoryInput.setCustomValidity("");
+
+    if (!parentCategoryInput.value) {
+      parentCategoryInput.setCustomValidity(
+        "カテゴリを選択してください。"
+      );
+    }
+
+    // サムネイル画像
+    const thumbnailInput =
+      document.getElementById("thumbnailInput");
+    thumbnailInput.setCustomValidity(
+      thumbnailInput.validationMessage &&
+      thumbnailInput.validity.customError
+        ? thumbnailInput.validationMessage
+        : ""
+    );
+
+    if (!thumbnailInput.files.length) {
+      thumbnailInput.setCustomValidity(
+        "サムネイル画像を選択してください。"
+      );
+    }
+
+    // 動画
+    const videoInput =
+      document.getElementById("videoInput");
+
+    // すでに validateVideo() で customError が設定されている場合は残す
+    if (!videoInput.validity.customError) {
+      videoInput.setCustomValidity("");
+    }
+
+    if (!videoInput.files.length &&
+        !videoInput.validity.customError) {
+      videoInput.setCustomValidity(
+        "動画ファイルを選択してください。"
+      );
+    }
+
+    // 本文
+    const contentInput =
+      document.getElementById("id_content");
+    contentInput.setCustomValidity("");
+
+    if (!contentInput.value.trim()) {
+      contentInput.setCustomValidity(
+        "本文を入力してください。"
+      );
+    }
+  }
+
+  function validateThumbnail() {
+    if (!thumbnailInput) return;
+
+    const file = thumbnailInput.files[0];
+    if (!file) return; // required は reportValidity() が判定
+    
+    // 前回のエラーをリセット
+    thumbnailInput.setCustomValidity("");
+
+    const validExtensions = [".jpg", ".jpeg", ".png"];
+    const fileName = file.name.toLowerCase();
+
+    const isValid = validExtensions.some(ext =>
+      fileName.endsWith(ext)
+    );
+
+    if (!isValid) {
+      thumbnailInput.setCustomValidity(
+        "対応している画像形式はJPEGとPNGです。"
+      );
+    }
+  }
+
+  function validateVideo() {
+    if (!videoInput) return;
+
+    const file = videoInput.files[0];
+    if (!file) return; // required は reportValidity() が判定
+
+    // 前回のエラーをリセット
+    videoInput.setCustomValidity("");
+
+    // 拡張子チェック
+    const validExtensions = [".mp4", ".mov"];
+    const fileName = file.name.toLowerCase();
+
+    const isValidExtension = validExtensions.some(ext =>
+      fileName.endsWith(ext)
+    );
+
+    if (!isValidExtension) {
+      videoInput.setCustomValidity(
+        "MP4またはMOV形式の動画をアップしてください。"
+      );
+      return;
+    }
+
+    // MIMEタイプチェック（任意だが追加）
+    if (!file.type.startsWith("video/")) {
+      videoInput.setCustomValidity(
+        "動画ファイルを選択してください。"
+      );
+      return;
+    }
+
+    // ファイルサイズチェック（30MB）
+    const maxSize = 30 * 1024 * 1024;
+
+    if (file.size > maxSize) {
+      videoInput.setCustomValidity(
+        "動画は30MB以内にしてください。"
+      );
+    }
+  }
+
+  function validateForm() {
+    validateRequiredFields();
+    validateThumbnail();
+    validateVideo();
+  }
+
+
+  function showFieldErrors() {
+    // すべてのエラー表示を初期化
+    document.querySelectorAll(".js-error-message").forEach(el => {
+      el.textContent = "";
+      el.style.display = "none";
+    });
+
+    // エラーのある項目を取得
+    const invalidFields = form.querySelectorAll(":invalid");
+
+    if (invalidFields.length === 0) {
+      return true;
+    }
+
+    invalidFields.forEach(field => {
+      const inputArea = field.closest(".input-area");
+      const errorBox = inputArea.querySelector(".js-error-message");
+
+      if (errorBox) {
+        errorBox.textContent = field.validationMessage;
+        errorBox.style.display = "block";
+      }
+    });
+
+    // 最初のエラー項目へフォーカス
+    invalidFields[0].focus();
+
+    return false;
+  }
+
 
   openConfirmBtn?.addEventListener("click", () => {
+
+    validateForm();
+
+    form.checkValidity();
+
+    if (!showFieldErrors()) {
+      return;
+    }
+
     const titleInput = document.querySelector("[name='title']");
     const parentCategoryInput = document.querySelector("[name='parent_category']");
     const categoryInput = document.querySelector("[name='category']");
