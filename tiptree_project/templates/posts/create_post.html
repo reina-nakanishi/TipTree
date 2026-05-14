@@ -10,7 +10,7 @@
     <h2 class="page-title">投稿を作成</h1>
     <p class="required-note">＊は必須項目です</p>
 
-    <form method="POST" enctype="multipart/form-data" class="create-post-form" novalidate>
+    <form method="POST" enctype="multipart/form-data" class="create-post-form" >
         {% csrf_token %}
 
         <input type="hidden" name="token" value="{{ token }}">
@@ -40,6 +40,8 @@
             {% else %}
                 {{ field }}
             {% endif %}
+
+            <div class="js-error-message"></div>
 
             {% if field.errors %}
                 <div class="error-message">
