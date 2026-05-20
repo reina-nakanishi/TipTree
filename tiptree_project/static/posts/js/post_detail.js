@@ -1,5 +1,26 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+  const removeEmptyMessage = (listSelector, messageId) => {
+    const list = document.querySelector(listSelector);
+    const message = document.getElementById(messageId);
+
+    if (!list || !message) return;
+
+    // 「まだありません」のメッセージ以外の子要素が1つでもあれば削除
+    const hasOtherElements = Array.from(list.children).some(
+      child => child.id !== messageId
+    );
+
+    if (hasOtherElements) {
+      message.remove();
+    }
+  };
+
+  // コメント用
+  removeEmptyMessage(".comment-list", "no-comments-message");
+  // 補足説明用
+  removeEmptyMessage(".supplement-list", "no-supplements-message");
+
   const text = document.getElementById("post-text");
   const btn = document.getElementById("toggle-btn");
 
@@ -146,6 +167,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         if (container && data.html) {
+
+          const emptyMessage = container.querySelector(
+            "#no-comments-message, #no-supplements-message"
+          );
+
+          if (emptyMessage) {
+            emptyMessage.remove();
+          }
+
           container.insertAdjacentHTML("afterbegin", data.html);
           container.style.display = "block";
         }
