@@ -73,7 +73,7 @@
   justify-content: center;  /* 横中央 */
   align-items: center;      /* 縦中央 */
   gap: 40px;                /* ボタン同士の間隔 */
-  margin: 40px;
+  margin: 40px 40px 30px 40px;
 }
 
 .back-btn {
@@ -110,4 +110,8 @@
 a {
     display: block;
     text-align: center;
+}
+
+.password-link {
+    margin-bottom: 25px;
 }
