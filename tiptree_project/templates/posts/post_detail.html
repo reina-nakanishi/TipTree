@@ -126,7 +126,7 @@
                 {% for supplement in supplements %}
                     {% include "posts/includes/supplement_item.html" %}
                 {% empty %}
-                    <p>まだ補足説明はありません</p>
+                    <p id="no-supplements-message">まだ補足説明はありません</p>
                 {% endfor %}
             </div>
 
@@ -154,7 +154,7 @@
                 {% for comment in comments %}
                     {% include "posts/includes/comment_item.html" %}
                 {% empty %}
-                    <p>まだコメントはありません</p>
+                    <p id="no-comments-message">まだコメントはありません</p>
                 {% endfor %}
             </div>
 
