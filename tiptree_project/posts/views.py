@@ -223,6 +223,7 @@ def post_delete(request, post_id):
 
     if request.method == "POST":
         post.delete()
+        messages.success(request,"投稿を削除しました")
         return redirect('accounts:my_page') 
 
 
@@ -275,6 +276,7 @@ def comment_delete(request, comment_id):
 
     if request.method == "POST":
         comment.delete()
+        messages.success(request,"コメントを削除しました")
         return redirect(request.META.get("HTTP_REFERER", "/"))
 
 
@@ -329,6 +331,7 @@ def comment_reply_delete(request, comment_reply_id):
 
     if request.method == "POST":
         comment_reply.delete()
+        messages.success(request,"返信を削除しました")
         return redirect(request.META.get("HTTP_REFERER", "/"))
 
 
@@ -381,6 +384,7 @@ def supplement_delete(request, supplement_id):
 
     if request.method == "POST":
         supplement.delete()
+        messages.success(request,"補足説明を削除しました")
         return redirect(request.META.get("HTTP_REFERER", "/"))
 
 
@@ -435,6 +439,7 @@ def supplement_reply_delete(request, supplement_reply_id):
 
     if request.method == "POST":
         supplement_reply.delete()
+        messages.success(request,"返信を削除しました")
         return redirect(request.META.get("HTTP_REFERER", "/"))
     
 
